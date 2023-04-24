@@ -13,7 +13,7 @@ import javax.validation.constraints.Positive;
 public class User {
 
     @Positive(message = "Идентификатор пользователя не может быть отрицательным.")
-    private final Long id;
+    private Long id;
 
     @NotBlank(message = "Имя пользователя не может быть пустым.")
     @Length(max = 50, message = "Имя пользователя не должно превышать 50 символов.")

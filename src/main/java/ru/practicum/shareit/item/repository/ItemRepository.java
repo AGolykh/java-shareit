@@ -3,12 +3,17 @@ package ru.practicum.shareit.item.repository;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.Optional;
 
-interface ItemRepository {
+public interface ItemRepository {
 
-    List<Item> findByUserId(long userId);
+    List<Item> findByUserId(Long userId);
 
-    Item save(Item item);
+    Optional<Item> findById(Long itemId);
 
-    void deleteByUserIdAndItemId(long userId, long itemId);
+    Optional<Item> create(Item item);
+
+    Optional<Item> update(Item item);
+
+    List<Item> search(String text);
 }

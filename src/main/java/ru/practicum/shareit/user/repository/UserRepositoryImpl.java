@@ -1,31 +1,64 @@
 package ru.practicum.shareit.user.repository;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-@Component
+@Repository("UserInMemoryRepository")
 public class UserRepositoryImpl implements UserRepository {
-    private final List<User> users = new ArrayList<>();
+    private final Map<Long, User> users = new HashMap<>();
+    private final List<String> emails = new ArrayList<>();
+
+    private Long currentId = 0L;
+
     @Override
     public List<User> findAll() {
-        return users;
+        return new ArrayList<>(users.values());
     }
 
     @Override
-    public User save(User user) {
-        user.setId(getId());
-        users.add(user);
-        return user;
+    public Optional<User> findById(Long userId) {
+        if (!users.containsKey(userId)) {
+            return Optional.empty();
+        }
+        return Optional.of(users.get(userId));
     }
 
-    private long getId() {
-        long lastId = users.stream()
-                .mapToLong(User::getId)
-                .max()
-                .orElse(0);
-        return lastId + 1;
+    @Override
+    public Optional<User> create(User user) {
+        if (emails.contains(user.getEmail())) {
+            return Optional.empty();
+        }
+        user.setId(++currentId);
+        users.put(user.getId(), user);
+        emails.add(user.getEmail().toLowerCase());
+        return Optional.of(user);
+    }
+
+    @Override
+    public Optional<User> update(User user) {
+        if (!users.containsKey(user.getId())) {
+            return Optional.empty();
+        }
+        if (!users.get(user.getId()).getEmail().equalsIgnoreCase(user.getEmail())) {
+            emails.remove(users.get(user.getId()).getEmail().toLowerCase());
+            emails.add(user.getEmail().toLowerCase());
+        }
+        users.put(user.getId(), user);
+        return findById(user.getId());
+    }
+
+    @Override
+    public void removeById(Long userId) {
+        if (users.containsKey(userId)) {
+            emails.remove(users.get(userId).getEmail());
+        }
+        users.remove(userId);
+    }
+
+    @Override
+    public Boolean emailIsExist(String email) {
+        return emails.contains(email);
     }
 }
