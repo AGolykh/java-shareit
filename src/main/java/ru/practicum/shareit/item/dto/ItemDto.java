@@ -1,7 +1,15 @@
 package ru.practicum.shareit.item.dto;
 
-/**
- * TODO Sprint add-controllers.
- */
+import ru.practicum.shareit.item.model.Item;
+
 public class ItemDto {
+    public static ItemDto toItemDto(Item item) {
+        return new ItemDto(
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable(),
+                item.getRequest() != null ? item.getRequest().getId() : null
+        );
+    }
+
 }
