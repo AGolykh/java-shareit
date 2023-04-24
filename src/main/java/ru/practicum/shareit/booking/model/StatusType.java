@@ -2,8 +2,6 @@ package ru.practicum.shareit.booking.model;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-
 @RequiredArgsConstructor
 public enum StatusType {
     WAITING(1L),
