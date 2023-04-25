@@ -6,24 +6,17 @@ public class UserMapper {
     }
 
     public static User mapToUser(UserDto userDto, User user) {
-        User newUser = new User();
         if (userDto.getId() != null) {
-            newUser.setId(userDto.getId());
-        } else {
-            newUser.setId(user.getId());
+            user.setId(userDto.getId());
         }
 
         if (userDto.getName() != null) {
-            newUser.setName(userDto.getName());
-        } else {
-            newUser.setName(user.getName());
+            user.setName(userDto.getName());
         }
 
         if (userDto.getEmail() != null) {
-            newUser.setEmail(userDto.getEmail());
-        } else {
-            newUser.setEmail(user.getEmail());
+            user.setEmail(userDto.getEmail());
         }
-        return newUser;
+        return user;
     }
 }

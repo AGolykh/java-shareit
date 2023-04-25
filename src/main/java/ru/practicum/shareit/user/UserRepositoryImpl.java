@@ -7,7 +7,7 @@ import java.util.*;
 @Repository("UserInMemoryRepository")
 public class UserRepositoryImpl implements UserRepository {
     private final Map<Long, User> users = new HashMap<>();
-    private final List<String> emails = new ArrayList<>();
+    private final Map<Long,String> emails = new HashMap<>();
 
     private Long currentId = 0L;
 
@@ -26,12 +26,12 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> create(User user) {
-        if (emails.contains(user.getEmail())) {
+        if (emails.containsValue(user.getEmail())) {
             return Optional.empty();
         }
         user.setId(++currentId);
         users.put(user.getId(), user);
-        emails.add(user.getEmail().toLowerCase());
+        emails.put(user.getId(), user.getEmail().toLowerCase());
         return Optional.of(user);
     }
 
@@ -40,10 +40,8 @@ public class UserRepositoryImpl implements UserRepository {
         if (!users.containsKey(user.getId())) {
             return Optional.empty();
         }
-        if (!users.get(user.getId()).getEmail().equalsIgnoreCase(user.getEmail())) {
-            emails.remove(users.get(user.getId()).getEmail().toLowerCase());
-            emails.add(user.getEmail().toLowerCase());
-        }
+        emails.remove(user.getId());
+        emails.put(user.getId(), user.getEmail().toLowerCase());
         users.put(user.getId(), user);
         return findById(user.getId());
     }
@@ -51,13 +49,13 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public void removeById(Long userId) {
         if (users.containsKey(userId)) {
-            emails.remove(users.get(userId).getEmail());
+            emails.remove(userId);
         }
         users.remove(userId);
     }
 
     @Override
     public Boolean emailIsExist(String email) {
-        return emails.contains(email);
+        return emails.containsValue(email);
     }
 }
