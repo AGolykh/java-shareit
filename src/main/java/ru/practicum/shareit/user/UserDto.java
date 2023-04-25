@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,14 +7,12 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
 
-    @Positive(message = "Идентификатор пользователя не может быть отрицательным.")
     private Long id;
 
     @NotBlank(message = "Имя пользователя не может быть пустым.")

@@ -1,10 +1,10 @@
-package ru.practicum.shareit.item.service;
-
-import ru.practicum.shareit.item.dto.ItemDto;
+package ru.practicum.shareit.item;
 
 import java.util.List;
 
 public interface ItemService {
+
+    List<ItemDto> search(String text);
 
     List<ItemDto> getByUserId(Long userId);
 
@@ -14,5 +14,6 @@ public interface ItemService {
 
     ItemDto update(Long userId, Long itemId, ItemDto itemDto);
 
-    List<ItemDto> search(String text);
+
+
 }

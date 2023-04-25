@@ -5,9 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.item.ItemDto;
+import ru.practicum.shareit.item.ItemService;
+import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.UserDto;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest
