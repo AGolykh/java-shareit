@@ -11,6 +11,7 @@ import ru.practicum.shareit.user.UserService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +28,8 @@ class ItemServiceImpl implements ItemService {
             log.debug("Search by empty text.");
             return Collections.emptyList();
         }
-        List<ItemDto> result = itemRepository.search(text).stream()
+        List<ItemDto> result = itemRepository
+                .findAllByNameOrDescriptionContainsIgnoreCaseAndAvailableTrue(text, text).stream()
                 .map(ItemMapper::mapToDto)
                 .collect(Collectors.toList());
         log.info("Found {} item(s).", result.size());
@@ -36,7 +38,7 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getByUserId(Long userId) {
-        List<ItemDto> result = itemRepository.findByUserId(userId).stream()
+        List<ItemDto> result = itemRepository.findAllByOwner(userId).stream()
                 .map(ItemMapper::mapToDto)
                 .collect(Collectors.toList());
         log.info("Found {} item(s).", result.size());
@@ -58,7 +60,7 @@ class ItemServiceImpl implements ItemService {
         User user = userService.getUserById(userId);
         Item item = new Item();
         item.setOwner(user.getId());
-        ItemDto result = itemRepository.create(ItemMapper.mapToItem(itemDto, item))
+        ItemDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(itemDto, item)))
                 .map(ItemMapper::mapToDto)
                 .orElseThrow(() -> new ItemCreationException(itemDto.getName()));
         log.info("Item {} {} created.", result.getId(), result.getName());
@@ -73,7 +75,7 @@ class ItemServiceImpl implements ItemService {
             log.warn("User {} is not the owner of the item {}.", userId, newItem.getId());
             throw new WrongOwnerException(userId, newItem.getId());
         }
-        ItemDto result = itemRepository.update(ItemMapper.mapToItem(newItem, oldItem))
+        ItemDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(newItem, oldItem)))
                 .map(ItemMapper::mapToDto)
                 .orElseThrow(() -> new ItemCreationException(oldItem.getName()));
         log.info("Item {} {} updated.", result.getId(), result.getName());

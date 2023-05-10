@@ -3,11 +3,12 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.user.EmailConflictException;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.user.UserCreationException;
 import ru.practicum.shareit.exception.user.UserNotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,36 +36,30 @@ class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Transactional
     public UserDto create(UserDto userDto) {
         User user = UserMapper.mapToUser(userDto, new User());
-        UserDto result = userRepository
-                .create(user)
+        UserDto result = Optional.of(userRepository.save(user))
                 .map(UserMapper::mapToDto)
                 .orElseThrow(() -> new UserCreationException(user.getName()));
         log.info("User {} {} created.", result.getId(), result.getName());
         return result;
     }
 
+    @Transactional
     public UserDto update(UserDto newUser, Long userId) {
         User oldUser = getUserById(userId);
-        String email = newUser.getEmail();
-        if (email != null
-                && !oldUser.getEmail().equalsIgnoreCase(email)
-                && userRepository.emailIsExist(email)) {
-            log.warn("User's email {} is wrong.", newUser.getEmail());
-            throw new EmailConflictException(newUser.getEmail());
-        }
-        UserDto result = userRepository
-                .update(UserMapper.mapToUser(newUser, oldUser))
+        UserDto result = Optional.of(userRepository.save(UserMapper.mapToUser(newUser, oldUser)))
                 .map(UserMapper::mapToDto)
                 .orElseThrow(() -> new UserNotFoundException(userId));
         log.info("User {} {} updated.", result.getId(), result.getName());
         return result;
     }
 
+    @Transactional
     public void deleteById(Long userId) {
         User result = getUserById(userId);
-        userRepository.removeById(result.getId());
+        userRepository.deleteById(result.getId());
         log.info("User {} removed.", result.getName());
     }
 
