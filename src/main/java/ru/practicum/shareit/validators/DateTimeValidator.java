@@ -1,6 +1,6 @@
 package ru.practicum.shareit.validators;
 
-import ru.practicum.shareit.exception.booking.ValidateTimeException;
+import ru.practicum.shareit.exception.ValidateTimeException;
 
 import java.time.LocalDateTime;
 

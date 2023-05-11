@@ -3,9 +3,9 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.item.ItemCreationException;
-import ru.practicum.shareit.exception.item.ItemNotFoundException;
-import ru.practicum.shareit.exception.item.WrongOwnerException;
+import ru.practicum.shareit.exception.ObjectCreationException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.exception.WrongOwnerException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
@@ -22,6 +22,7 @@ class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
 
+
     @Override
     public List<ItemDto> search(String text) {
         if (text.length() == 0) {
@@ -29,7 +30,7 @@ class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         }
         List<ItemDto> result = itemRepository
-                .findAllByNameOrDescriptionContainsIgnoreCaseAndAvailableTrue(text, text).stream()
+                .search(text).stream()
                 .map(ItemMapper::mapToDto)
                 .collect(Collectors.toList());
         log.info("Found {} item(s).", result.size());
@@ -50,7 +51,7 @@ class ItemServiceImpl implements ItemService {
         ItemDto result = itemRepository
                 .findById(itemId)
                 .map(ItemMapper::mapToDto)
-                .orElseThrow(() -> new ItemNotFoundException(itemId));
+                .orElseThrow(() -> new ObjectNotFoundException("Item", itemId));
         log.info("User {} is found.", result.getId());
         return result;
     }
@@ -62,7 +63,7 @@ class ItemServiceImpl implements ItemService {
         item.setOwner(user.getId());
         ItemDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(itemDto, item)))
                 .map(ItemMapper::mapToDto)
-                .orElseThrow(() -> new ItemCreationException(itemDto.getName()));
+                .orElseThrow(() -> new ObjectCreationException("Item", itemDto.getName()));
         log.info("Item {} {} created.", result.getId(), result.getName());
         return result;
     }
@@ -73,11 +74,11 @@ class ItemServiceImpl implements ItemService {
         Item oldItem = getItemById(itemId);
         if (!user.getId().equals(oldItem.getOwner())) {
             log.warn("User {} is not the owner of the item {}.", userId, newItem.getId());
-            throw new WrongOwnerException(userId, newItem.getId());
+            throw new WrongOwnerException(userId, "Item", newItem.getId());
         }
         ItemDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(newItem, oldItem)))
                 .map(ItemMapper::mapToDto)
-                .orElseThrow(() -> new ItemCreationException(oldItem.getName()));
+                .orElseThrow(() -> new ObjectCreationException("Item", oldItem.getName()));
         log.info("Item {} {} updated.", result.getId(), result.getName());
         return result;
     }
@@ -85,6 +86,6 @@ class ItemServiceImpl implements ItemService {
     public Item getItemById(Long itemId) {
         return itemRepository
                 .findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException(itemId));
+                .orElseThrow(() -> new ObjectNotFoundException("Item", itemId));
     }
 }

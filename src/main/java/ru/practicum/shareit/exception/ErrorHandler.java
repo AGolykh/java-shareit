@@ -5,15 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.booking.BookingCreationException;
-import ru.practicum.shareit.exception.booking.BookingNotFoundException;
-import ru.practicum.shareit.exception.booking.ItemUnavailableException;
-import ru.practicum.shareit.exception.booking.ValidateTimeException;
-import ru.practicum.shareit.exception.item.ItemCreationException;
-import ru.practicum.shareit.exception.item.ItemNotFoundException;
-import ru.practicum.shareit.exception.user.UserCreationException;
-import ru.practicum.shareit.exception.user.UserNotFoundException;
-import ru.practicum.shareit.exception.item.WrongOwnerException;
 
 @Slf4j
 @RestControllerAdvice
@@ -21,17 +12,9 @@ import ru.practicum.shareit.exception.item.WrongOwnerException;
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(final UserNotFoundException e) {
+    public ErrorResponse handle(final ObjectNotFoundException e) {
         return new ErrorResponse(
-                "error", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(final ItemNotFoundException e) {
-        return new ErrorResponse(
-                "error", e.getMessage()
+                e.getMessage()
         );
     }
 
@@ -39,31 +22,15 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handle(final WrongOwnerException e) {
         return new ErrorResponse(
-                "error", e.getMessage()
+                e.getMessage()
         );
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handle(final UserCreationException e) {
+    public ErrorResponse handle(final ObjectCreationException e) {
         return new ErrorResponse(
-                "error", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handle(final ItemCreationException e) {
-        return new ErrorResponse(
-                "error", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handle(final BookingCreationException e) {
-        return new ErrorResponse(
-                "error", e.getMessage()
+                e.getMessage()
         );
     }
 
@@ -71,7 +38,15 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handle(final ItemUnavailableException e) {
         return new ErrorResponse(
-                "error", e.getMessage()
+                e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle(final ObjectUpdateException e) {
+        return new ErrorResponse(
+                e.getMessage()
         );
     }
 
@@ -79,15 +54,24 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handle(final ValidateTimeException e) {
         return new ErrorResponse(
-                "error", e.getMessage()
+                e.getMessage()
+        );
+    }
+
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handle(final WrongBookerException e) {
+        return new ErrorResponse(
+                e.getMessage()
         );
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(final BookingNotFoundException e) {
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handle(final UnknownStateException e) {
         return new ErrorResponse(
-                "error", e.getMessage()
+                e.getMessage()
         );
     }
 }

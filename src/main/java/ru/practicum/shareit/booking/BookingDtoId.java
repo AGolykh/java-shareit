@@ -20,9 +20,10 @@ public class BookingDtoId {
     @NotNull
     private LocalDateTime end;
 
+    @NotNull
     private Long itemId;
 
     private Long bookerId;
 
-    private StatusType status;
+    private Status status;
 }

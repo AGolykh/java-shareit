@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exception.user.UserCreationException;
-import ru.practicum.shareit.exception.user.UserNotFoundException;
+import ru.practicum.shareit.exception.ObjectCreationException;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +31,7 @@ class UserServiceImpl implements UserService {
         UserDto result = userRepository
                 .findById(userId)
                 .map(UserMapper::mapToDto)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
         log.info("User {} is found.", result.getId());
         return result;
     }
@@ -41,7 +41,7 @@ class UserServiceImpl implements UserService {
         User user = UserMapper.mapToUser(userDto, new User());
         UserDto result = Optional.of(userRepository.save(user))
                 .map(UserMapper::mapToDto)
-                .orElseThrow(() -> new UserCreationException(user.getName()));
+                .orElseThrow(() -> new ObjectCreationException("User", user.getName()));
         log.info("User {} {} created.", result.getId(), result.getName());
         return result;
     }
@@ -51,7 +51,7 @@ class UserServiceImpl implements UserService {
         User oldUser = getUserById(userId);
         UserDto result = Optional.of(userRepository.save(UserMapper.mapToUser(newUser, oldUser)))
                 .map(UserMapper::mapToDto)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
         log.info("User {} {} updated.", result.getId(), result.getName());
         return result;
     }
@@ -66,7 +66,7 @@ class UserServiceImpl implements UserService {
     public User getUserById(Long userId) {
         User result = userRepository
                 .findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
         log.info("User {} is found.", result.getId());
         return result;
     }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,13 +16,16 @@ public class BookingDtoModel {
 
     private Long id;
 
+    @NotNull
     private LocalDateTime start;
 
+    @NotNull
     private LocalDateTime end;
 
+    @NotNull
     private Item item;
 
     private User booker;
 
-    private StatusType status;
+    private Status status;
 }
