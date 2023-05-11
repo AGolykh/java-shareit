@@ -3,14 +3,8 @@ package ru.practicum.shareit.item;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import ru.practicum.shareit.booking.Booking;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
-
 @Data
 @RequiredArgsConstructor
 @Entity

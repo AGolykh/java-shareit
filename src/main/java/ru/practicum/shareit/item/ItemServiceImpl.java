@@ -3,6 +3,9 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingDtoModel;
+import ru.practicum.shareit.booking.BookingMapper;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.ObjectCreationException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.WrongOwnerException;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
+    private final BookingRepository bookingRepository;
     private final UserService userService;
 
 
@@ -53,6 +57,12 @@ class ItemServiceImpl implements ItemService {
                 .map(ItemMapper::mapToDto)
                 .orElseThrow(() -> new ObjectNotFoundException("Item", itemId));
         log.info("User {} is found.", result.getId());
+
+        List<BookingDtoModel> bookings = bookingRepository.findAllByItemIdOrderByStartDesc(result.getId())
+                .stream()
+                .map(BookingMapper::mapToDtoModel)
+                .collect(Collectors.toList());
+
         return result;
     }
 
