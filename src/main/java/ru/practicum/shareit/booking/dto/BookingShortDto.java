@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BookingShortDto {
 
-    private Long Id;
+    private Long id;
     private LocalDateTime start;
     private LocalDateTime end;
     private Status status;

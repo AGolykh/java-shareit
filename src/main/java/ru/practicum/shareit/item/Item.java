@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
+
 @Data
 @RequiredArgsConstructor
 @Entity

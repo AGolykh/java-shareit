@@ -30,21 +30,21 @@ public class ItemMapper {
 
     public static Item mapToUpdateItem(ItemUpdateDto itemUpdateDto, Item item) {
 
-        if(itemUpdateDto.getName() == null
+        if (itemUpdateDto.getName() == null
                 && itemUpdateDto.getDescription() == null
                 && itemUpdateDto.getAvailable() == null) {
             throw new ObjectCreationException("Item", item.getName());
         }
 
-        if(itemUpdateDto.getName() != null) {
+        if (itemUpdateDto.getName() != null) {
             item.setName(itemUpdateDto.getName());
         }
 
-        if(itemUpdateDto.getDescription() != null) {
+        if (itemUpdateDto.getDescription() != null) {
             item.setDescription(itemUpdateDto.getDescription());
         }
 
-        if(itemUpdateDto.getAvailable() != null) {
+        if (itemUpdateDto.getAvailable() != null) {
             item.setAvailable(itemUpdateDto.getAvailable());
         }
 

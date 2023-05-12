@@ -23,7 +23,7 @@ public class UserMapper {
     }
 
     public static User mapToUpdateUser(UserUpdateDto userUpdateDto, User user) {
-        if(userUpdateDto.getName() == null && userUpdateDto.getEmail() == null) {
+        if (userUpdateDto.getName() == null && userUpdateDto.getEmail() == null) {
             throw new ObjectCreationException("User", user.getName());
         }
 
@@ -31,7 +31,7 @@ public class UserMapper {
             user.setName(userUpdateDto.getName());
         }
 
-        if(userUpdateDto.getEmail() != null) {
+        if (userUpdateDto.getEmail() != null) {
             user.setEmail(userUpdateDto.getEmail());
         }
 
