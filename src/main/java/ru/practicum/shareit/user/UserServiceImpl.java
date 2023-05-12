@@ -3,7 +3,6 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.ObjectCreationException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.user.dto.*;
@@ -16,6 +15,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
 
     @Override
@@ -38,7 +38,6 @@ class UserServiceImpl implements UserService {
         return result;
     }
 
-    @Transactional
     @Override
     public UserFullDto create(UserInputDto userInputDto) {
         User user = UserMapper.mapToNewUser(userInputDto, new User());
@@ -49,7 +48,6 @@ class UserServiceImpl implements UserService {
         return result;
     }
 
-    @Transactional
     @Override
     public UserFullDto update(UserUpdateDto userUpdateDto, Long userId) {
         User oldUser = getUserById(userId);
@@ -60,7 +58,6 @@ class UserServiceImpl implements UserService {
         return result;
     }
 
-    @Transactional
     @Override
     public void deleteById(Long userId) {
         User result = getUserById(userId);
