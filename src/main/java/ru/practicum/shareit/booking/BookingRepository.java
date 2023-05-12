@@ -33,35 +33,41 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
 
     @Query("select b from Booking b " +
-            "where b.item.owner = ?1 " +
+            "where b.item.owner.id = ?1 " +
             " order by b.start desc ")
     List<Booking> findAllByOwnerIdOrderByStartDesc(Long ownerId);
 
     @Query("select b from Booking b " +
-            "where b.item.owner = ?1" +
+            "where b.item.owner.id = ?1 " +
             "and current_timestamp between b.start and b.end " +
             "order by b.start desc ")
     List<Booking> findAllByOwnerIdAndStateCurrentOrderByStartDesc(Long ownerId);
 
     @Query("select b from Booking b " +
-            "where b.item.owner = ?1 " +
+            "where b.item.owner.id = ?1 " +
             "and current_timestamp > b.end " +
             "order by b.start desc ")
     List<Booking> findAllByOwnerIdAndStatePastOrderByStartDesc(Long ownerId);
 
     @Query("select b from Booking b " +
-            "where b.item.owner = ?1 " +
+            "where b.item.owner.id = ?1 " +
             "and current_timestamp < b.start " +
             "order by b.start desc ")
     List<Booking> findAllByOwnerIdAndStateFutureOrderByStartDesc(Long ownerId);
 
     @Query("select b from Booking b " +
-            "where b.item.owner = ?1 " +
+            "where b.item.owner.id = ?1 " +
             "and b.status = ?2 " +
             " order by b.start desc ")
     List<Booking> findAllByOwnerIdAndStatusOrderByStartDesc(Long ownerId, Status status);
 
-    Optional<Booking> findFirstByItemIdAndEndBeforeOrderByEndDesc(Long itemId, LocalDateTime localDate);
+    Optional<Booking> findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(Long itemId,
+                                                                           LocalDateTime localDate,
+                                                                           Status status);
 
-    Optional<Booking> findFirstByItemIdAndStartAfterOrderByEndAsc(Long itemId, LocalDateTime localDate);
+    Optional<Booking> findFirstByItemIdAndStartAfterAndStatusOrderByEndAsc(Long itemId,
+                                                                           LocalDateTime localDate,
+                                                                           Status status);
+
+    Boolean existsByBookerIdAndItemIdAndEndBefore(Long bookerId, Long itemId, LocalDateTime dateTime);
 }

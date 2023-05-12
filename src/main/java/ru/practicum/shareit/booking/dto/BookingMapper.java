@@ -2,47 +2,33 @@ package ru.practicum.shareit.booking.dto;
 
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.user.dto.UserMapper;
 
 public class BookingMapper {
 
-    public static BookingObjectDto mapToDtoModel(Booking booking) {
-        return new BookingObjectDto(booking.getId(),
+    public static BookingFullDto mapToFullDto(Booking booking) {
+        return new BookingFullDto(booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),
-                booking.getItem(),
-                booking.getBooker(),
+                ItemMapper.mapToShortDto(booking.getItem()),
+                UserMapper.mapToShortDto(booking.getBooker()),
                 booking.getStatus());
     }
 
-    public static BookingIdDto mapToDtoId(Booking booking) {
-        return new BookingIdDto(booking.getId(),
+    public static BookingShortDto mapToShortDto(Booking booking) {
+        return new BookingShortDto(booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),
-                booking.getItem().getId(),
-                booking.getBooker().getId(),
-                booking.getStatus());
+                booking.getStatus(),
+                booking.getBooker().getId());
     }
 
-    public static Booking mapToBooking(BookingIdDto bookingIdDto, Booking booking) {
-        if (bookingIdDto.getId() != null) {
-            booking.setId(bookingIdDto.getId());
-        }
-
-        if (bookingIdDto.getStart() != null) {
-            booking.setStart(bookingIdDto.getStart());
-        }
-
-        if (bookingIdDto.getEnd() != null) {
-            booking.setEnd(bookingIdDto.getEnd());
-        }
-
-        if (bookingIdDto.getStatus() != null) {
-            booking.setStatus(bookingIdDto.getStatus());
-        } else {
-            booking.setStatus(Status.WAITING);
-        }
+    public static Booking mapToBooking(BookingInputDto bookingInputDto, Booking booking) {
+        booking.setStart(bookingInputDto.getStart());
+        booking.setEnd(bookingInputDto.getEnd());
+        booking.setStatus(Status.WAITING);
 
         return booking;
     }
-
 }

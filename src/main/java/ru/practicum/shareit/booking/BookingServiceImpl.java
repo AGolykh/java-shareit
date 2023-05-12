@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.dto.BookingIdDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.dto.BookingObjectDto;
+import ru.practicum.shareit.booking.dto.*;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemService;
@@ -28,10 +26,10 @@ public class BookingServiceImpl implements BookingService {
     private final UserService userService;
 
     @Override
-    public List<BookingObjectDto> getByBookerId(Long bookerId, String subState) {
+    public List<BookingFullDto> getByBookerId(Long bookerId, String subState) {
         State state = getState(subState);
         User booker = userService.getUserById(bookerId);
-        List<BookingObjectDto> result = (switch (state) {
+        List<BookingFullDto> result = (switch (state) {
             case ALL -> bookingRepository.findAllByBookerIdOrderByStartDesc(booker.getId());
             case CURRENT -> bookingRepository.findAllByBookerIdAndStateCurrentOrderByStartDesc(booker.getId());
             case PAST -> bookingRepository.findAllByBookerIdAndStatePastOrderByStartDesc(booker.getId());
@@ -39,7 +37,7 @@ public class BookingServiceImpl implements BookingService {
             case WAITING, REJECTED -> bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(booker.getId(),
                     Status.valueOf(state.toString()));
         }).stream()
-                .map(BookingMapper::mapToDtoModel)
+                .map(BookingMapper::mapToFullDto)
                 .collect(Collectors.toList());
 
         log.info("Found {} booking(s).", result.size());
@@ -47,10 +45,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingObjectDto> getByOwnerId(Long ownerId, String subState) {
+    public List<BookingFullDto> getByOwnerId(Long ownerId, String subState) {
         State state = getState(subState);
         User owner = userService.getUserById(ownerId);
-        List<BookingObjectDto> result = (switch (state) {
+        List<BookingFullDto> result = (switch (state) {
             case ALL -> bookingRepository.findAllByOwnerIdOrderByStartDesc(owner.getId());
             case CURRENT -> bookingRepository.findAllByOwnerIdAndStateCurrentOrderByStartDesc(owner.getId());
             case PAST -> bookingRepository.findAllByOwnerIdAndStatePastOrderByStartDesc(owner.getId());
@@ -58,7 +56,7 @@ public class BookingServiceImpl implements BookingService {
             case WAITING, REJECTED -> bookingRepository.findAllByOwnerIdAndStatusOrderByStartDesc(owner.getId(),
                     Status.valueOf(state.toString()));
         }).stream()
-                .map(BookingMapper::mapToDtoModel)
+                .map(BookingMapper::mapToFullDto)
                 .collect(Collectors.toList());
 
         log.info("Found {} booking(s).", result.size());
@@ -66,15 +64,15 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingObjectDto getById(Long userId, Long bookingId) {
+    public BookingFullDto getById(Long userId, Long bookingId) {
         Booking booking = getBookingById(bookingId);
         User booker = booking.getBooker();
-        User owner = userService.getUserById(booking.getItem().getOwner());
+        User owner = userService.getUserById(booking.getItem().getOwner().getId());
         if (!booker.getId().equals(userId) && !owner.getId().equals(userId)) {
             throw new WrongOwnerException(userId, "Booking", bookingId);
         }
-        BookingObjectDto result = bookingRepository.findById(bookingId)
-                .map(BookingMapper::mapToDtoModel)
+        BookingFullDto result = bookingRepository.findById(bookingId)
+                .map(BookingMapper::mapToFullDto)
                 .orElseThrow(() -> new ObjectNotFoundException("Booking", bookingId));
         log.info("Booking {} is found.", result.getId());
         return result;
@@ -82,10 +80,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingObjectDto create(Long userId, BookingIdDto bookingIdDto) {
+    public BookingFullDto create(Long userId, BookingInputDto bookingInputDto) {
         User booker = userService.getUserById(userId);
-        Item item = itemService.getItemById(bookingIdDto.getItemId());
-        if (booker.getId().equals(item.getOwner())) {
+        Item item = itemService.getItemById(bookingInputDto.getItemId());
+        if (booker.getId().equals(item.getOwner().getId())) {
             throw new WrongBookerException();
         }
 
@@ -93,14 +91,14 @@ public class BookingServiceImpl implements BookingService {
             throw new ItemUnavailableException(item.getId());
         }
 
-        DateTimeValidator.validate(bookingIdDto.getStart(), bookingIdDto.getEnd());
+        DateTimeValidator.validate(bookingInputDto.getStart(), bookingInputDto.getEnd());
 
         Booking booking = new Booking();
         booking.setItem(item);
         booking.setBooker(booker);
-        BookingObjectDto result =
-                Optional.of(bookingRepository.save(BookingMapper.mapToBooking(bookingIdDto, booking)))
-                        .map(BookingMapper::mapToDtoModel)
+        BookingFullDto result =
+                Optional.of(bookingRepository.save(BookingMapper.mapToBooking(bookingInputDto, booking)))
+                        .map(BookingMapper::mapToFullDto)
                         .orElseThrow(() -> new ObjectCreationException("Booking", booking.getItem().getName()));
         log.info("Booking {} {} created.", result.getId(), result.getItem().getName());
         return result;
@@ -108,28 +106,22 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingObjectDto update(Long userId, Long itemId, BookingIdDto bookingIdDto) {
-        return null;
-    }
-
-    @Transactional
-    @Override
-    public BookingObjectDto approve(Long userId, Long bookingId, Boolean isApproved) {
+    public BookingFullDto approve(Long userId, Long bookingId, Boolean isApproved) {
         User owner = userService.getUserById(userId);
         Booking booking = getBookingById(bookingId);
         Item item = itemService.getItemById(booking.getItem().getId());
         Status newStatus = isApproved ? Status.APPROVED : Status.REJECTED;
 
-        if (!booking.getStatus().equals(Status.WAITING) && owner.getId().equals(item.getOwner())) {
+        if (!booking.getStatus().equals(Status.WAITING) && owner.getId().equals(item.getOwner().getId())) {
             throw new ObjectUpdateException("Booking", booking.getId().toString());
         }
-        if (!owner.getId().equals(item.getOwner())) {
+        if (!owner.getId().equals(item.getOwner().getId())) {
             throw new WrongOwnerException(userId, "Item", item.getId());
         }
 
         booking.setStatus(newStatus);
         log.info("Booking status changed to {}.", booking.getStatus());
-        return BookingMapper.mapToDtoModel(booking);
+        return BookingMapper.mapToFullDto(booking);
     }
 
 

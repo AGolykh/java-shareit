@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 @Data
@@ -24,6 +25,7 @@ public class Item {
 
     private boolean available;
 
-    @Column(name = "OWNER_ID")
-    private Long owner;
+    @ManyToOne
+    @JoinColumn(name = "OWNER_ID")
+    private User owner;
 }

@@ -3,14 +3,17 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.exception.ObjectCreationException;
-import ru.practicum.shareit.exception.ObjectNotFoundException;
-import ru.practicum.shareit.exception.WrongOwnerException;
-import ru.practicum.shareit.item.dto.ItemBookingDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.comment.Comment;
+import ru.practicum.shareit.comment.CommentRepository;
+import ru.practicum.shareit.comment.dto.CommentFullDto;
+import ru.practicum.shareit.comment.dto.CommentInputDto;
+import ru.practicum.shareit.comment.dto.CommentMapper;
+import ru.practicum.shareit.exception.*;
+import ru.practicum.shareit.item.dto.*;
+
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
@@ -27,90 +30,105 @@ class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
     private final UserService userService;
 
 
     @Override
-    public List<ItemDto> search(String text) {
+    public List<ItemFullDto> search(String text) {
         if (text.length() == 0) {
             log.debug("Search by empty text.");
             return Collections.emptyList();
         }
-        List<ItemDto> result = itemRepository
+        List<ItemFullDto> result = itemRepository
                 .search(text).stream()
-                .map(ItemMapper::mapToItemDto)
+                .map(ItemMapper::mapToFullDto)
                 .collect(Collectors.toList());
         log.info("Found {} item(s).", result.size());
         return result;
     }
 
     @Override
-    public List<ItemBookingDto> getByUserId(Long userId) {
-        List<ItemBookingDto> result = itemRepository.findAllByOwner(userId).stream()
+    public List<ItemFullDto> getByUserId(Long userId) {
+        List<ItemFullDto> result = itemRepository.findAllByOwnerId(userId).stream()
                 .map(item -> {
-                    ItemBookingDto itemBookingDto = ItemMapper.mapToItemBookingDto(item);
+                    ItemFullDto itemFullDto = ItemMapper.mapToFullDto(item);
 
-                    if (itemBookingDto.getOwnerId().equals(userId)) {
-                        itemBookingDto.setLastBooking(bookingRepository
-                                .findFirstByItemIdAndEndBeforeOrderByEndDesc(item.getId(), LocalDateTime.now())
-                                .map(BookingMapper::mapToDtoId)
+                    if (itemFullDto.getOwner().getId().equals(userId)) {
+                        itemFullDto.setLastBooking(bookingRepository
+                                .findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(item.getId(),
+                                        LocalDateTime.now(),
+                                        Status.APPROVED)
+                                .map(BookingMapper::mapToShortDto)
                                 .orElse(null));
 
-                        itemBookingDto.setNextBooking(bookingRepository
-                                .findFirstByItemIdAndStartAfterOrderByEndAsc(item.getId(), LocalDateTime.now())
-                                .map(BookingMapper::mapToDtoId)
+                        itemFullDto.setNextBooking(bookingRepository
+                                .findFirstByItemIdAndStartAfterAndStatusOrderByEndAsc(item.getId(),
+                                        LocalDateTime.now(),
+                                        Status.APPROVED)
+                                .map(BookingMapper::mapToShortDto)
                                 .orElse(null));
                     }
-                    return itemBookingDto;
+                    return itemFullDto;
                 }).collect(Collectors.toList());
         log.info("Found {} item(s).", result.size());
         return result;
     }
 
     @Override
-    public ItemBookingDto getById(Long userId, Long itemId) {
-        ItemBookingDto result = itemRepository
+    public ItemFullDto getById(Long userId, Long itemId) {
+        ItemFullDto result = itemRepository
                 .findById(itemId)
-                .map(ItemMapper::mapToItemBookingDto)
+                .map(ItemMapper::mapToFullDto)
                 .orElseThrow(() -> new ObjectNotFoundException("Item", itemId));
 
-        if (result.getOwnerId().equals(userId)) {
+        if (result.getOwner().getId().equals(userId)) {
             result.setLastBooking(bookingRepository
-                    .findFirstByItemIdAndEndBeforeOrderByEndDesc(result.getId(), LocalDateTime.now())
-                    .map(BookingMapper::mapToDtoId)
+                    .findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(result.getId(),
+                            LocalDateTime.now(),
+                            Status.APPROVED)
+                    .map(BookingMapper::mapToShortDto)
                     .orElse(null));
+
             result.setNextBooking(bookingRepository
-                    .findFirstByItemIdAndStartAfterOrderByEndAsc(result.getId(), LocalDateTime.now())
-                    .map(BookingMapper::mapToDtoId)
+                    .findFirstByItemIdAndStartAfterAndStatusOrderByEndAsc(result.getId(),
+                            LocalDateTime.now(),
+                            Status.APPROVED)
+                    .map(BookingMapper::mapToShortDto)
                     .orElse(null));
         }
+
+        result.setComments(commentRepository.findAllByItemId(result.getId())
+                .stream()
+                .map(CommentMapper::mapToFullDto)
+                .collect(Collectors.toList()));
 
         log.info("User {} is found.", result.getId());
         return result;
     }
 
     @Override
-    public ItemDto create(Long userId, ItemDto itemDto) {
+    public ItemFullDto create(Long userId, ItemInputDto itemInputDto) {
         User user = userService.getUserById(userId);
         Item item = new Item();
-        item.setOwner(user.getId());
-        ItemDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(itemDto, item)))
-                .map(ItemMapper::mapToItemDto)
-                .orElseThrow(() -> new ObjectCreationException("Item", itemDto.getName()));
+        item.setOwner(user);
+        ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToNewItem(itemInputDto, item)))
+                .map(ItemMapper::mapToFullDto)
+                .orElseThrow(() -> new ObjectCreationException("Item", itemInputDto.getName()));
         log.info("Item {} {} created.", result.getId(), result.getName());
         return result;
     }
 
     @Override
-    public ItemDto update(Long userId, Long itemId, ItemDto newItem) {
+    public ItemFullDto update(Long userId, Long itemId, ItemUpdateDto itemUpdateDto) {
         User user = userService.getUserById(userId);
         Item oldItem = getItemById(itemId);
-        if (!user.getId().equals(oldItem.getOwner())) {
-            log.warn("User {} is not the owner of the item {}.", userId, newItem.getId());
-            throw new WrongOwnerException(userId, "Item", newItem.getId());
+        if (!user.getId().equals(oldItem.getOwner().getId())) {
+            log.warn("User {} is not the owner of the item {}.", userId, oldItem.getId());
+            throw new WrongOwnerException(userId, "Item", oldItem.getId());
         }
-        ItemDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(newItem, oldItem)))
-                .map(ItemMapper::mapToItemDto)
+        ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToUpdateItem(itemUpdateDto, oldItem)))
+                .map(ItemMapper::mapToFullDto)
                 .orElseThrow(() -> new ObjectCreationException("Item", oldItem.getName()));
         log.info("Item {} {} updated.", result.getId(), result.getName());
         return result;
@@ -120,5 +138,27 @@ class ItemServiceImpl implements ItemService {
         return itemRepository
                 .findById(itemId)
                 .orElseThrow(() -> new ObjectNotFoundException("Item", itemId));
+    }
+
+    @Override
+    public CommentFullDto addComment(Long userId, Long itemId, CommentInputDto commentInputDto) {
+        User author = userService.getUserById(userId);
+        Item item = getItemById(itemId);
+
+        if (!bookingRepository
+                .existsByBookerIdAndItemIdAndEndBefore(author.getId(), item.getId(), LocalDateTime.now())) {
+            throw new WrongAuthorException();
+        }
+
+        Comment comment = new Comment();
+        comment.setItem(item);
+        comment.setAuthor(author);
+
+        CommentFullDto commentFullDto =
+                Optional.of(commentRepository.save(CommentMapper.mapToComment(commentInputDto, comment)))
+                        .map(CommentMapper::mapToFullDto)
+                        .orElseThrow(() -> new ObjectCreationException("Comment", item.getName()));
+        log.info("Comment {} added to item {}.", commentFullDto.getId(), item.getId());
+        return commentFullDto;
     }
 }
