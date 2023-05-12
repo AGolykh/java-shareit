@@ -12,6 +12,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.validators.DateTimeValidator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,14 +30,32 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingFullDto> getByBookerId(Long bookerId, String subState) {
         State state = getState(subState);
         User booker = userService.getUserById(bookerId);
-        List<BookingFullDto> result = (switch (state) {
-            case ALL -> bookingRepository.findAllByBookerIdOrderByStartDesc(booker.getId());
-            case CURRENT -> bookingRepository.findAllByBookerIdAndStateCurrentOrderByStartDesc(booker.getId());
-            case PAST -> bookingRepository.findAllByBookerIdAndStatePastOrderByStartDesc(booker.getId());
-            case FUTURE -> bookingRepository.findAllByBookerIdAndStateFutureOrderByStartDesc(booker.getId());
-            case WAITING, REJECTED -> bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(booker.getId(),
-                    Status.valueOf(state.toString()));
-        }).stream()
+        List<Booking> bookings = new ArrayList<>();
+        switch (state) {
+            case ALL:
+                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(booker.getId());
+                break;
+            case CURRENT:
+                bookings = bookingRepository.findAllByBookerIdAndStateCurrentOrderByStartDesc(booker.getId());
+                break;
+            case PAST:
+                bookings = bookingRepository.findAllByBookerIdAndStatePastOrderByStartDesc(booker.getId());
+                break;
+            case FUTURE:
+                bookings = bookingRepository.findAllByBookerIdAndStateFutureOrderByStartDesc(booker.getId());
+                break;
+            case WAITING:
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(booker.getId(),
+                        Status.WAITING);
+                break;
+            case REJECTED:
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(booker.getId(),
+                        Status.REJECTED);
+                break;
+        }
+
+        List<BookingFullDto> result = bookings
+                .stream()
                 .map(BookingMapper::mapToFullDto)
                 .collect(Collectors.toList());
 
@@ -48,14 +67,32 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingFullDto> getByOwnerId(Long ownerId, String subState) {
         State state = getState(subState);
         User owner = userService.getUserById(ownerId);
-        List<BookingFullDto> result = (switch (state) {
-            case ALL -> bookingRepository.findAllByOwnerIdOrderByStartDesc(owner.getId());
-            case CURRENT -> bookingRepository.findAllByOwnerIdAndStateCurrentOrderByStartDesc(owner.getId());
-            case PAST -> bookingRepository.findAllByOwnerIdAndStatePastOrderByStartDesc(owner.getId());
-            case FUTURE -> bookingRepository.findAllByOwnerIdAndStateFutureOrderByStartDesc(owner.getId());
-            case WAITING, REJECTED -> bookingRepository.findAllByOwnerIdAndStatusOrderByStartDesc(owner.getId(),
-                    Status.valueOf(state.toString()));
-        }).stream()
+        List<Booking> bookings = new ArrayList<>();
+        switch (state) {
+            case ALL:
+                bookings = bookingRepository.findAllByOwnerIdOrderByStartDesc(owner.getId());
+                break;
+            case CURRENT:
+                bookings = bookingRepository.findAllByOwnerIdAndStateCurrentOrderByStartDesc(owner.getId());
+                break;
+            case PAST:
+                bookings = bookingRepository.findAllByOwnerIdAndStatePastOrderByStartDesc(owner.getId());
+                break;
+            case FUTURE:
+                bookings = bookingRepository.findAllByOwnerIdAndStateFutureOrderByStartDesc(owner.getId());
+                break;
+            case WAITING:
+                bookings = bookingRepository.findAllByOwnerIdAndStatusOrderByStartDesc(owner.getId(),
+                        Status.WAITING);
+                break;
+            case REJECTED:
+                bookings = bookingRepository.findAllByOwnerIdAndStatusOrderByStartDesc(owner.getId(),
+                        Status.REJECTED);
+                break;
+        }
+
+        List<BookingFullDto> result = bookings
+                .stream()
                 .map(BookingMapper::mapToFullDto)
                 .collect(Collectors.toList());
 
