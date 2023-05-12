@@ -1,10 +1,11 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import ru.practicum.shareit.booking.BookingDtoModel;
+import ru.practicum.shareit.booking.dto.BookingIdDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemDto {
+public class ItemBookingDto {
 
     private Long id;
 
@@ -27,18 +28,22 @@ public class ItemDto {
     @NotNull
     private Boolean available;
 
-    private BookingDtoModel nextBooking;
-    private BookingDtoModel lastBooking;
+    private Long ownerId;
+
+    private BookingIdDto nextBooking;
+
+    private BookingIdDto LastBooking;
 
 
-    public ItemDto(String name, String description, Boolean available) {
+    public ItemBookingDto(String name, String description, Boolean available, Long ownerId) {
         this.name = name;
         this.description = description;
         this.available = available;
+        this.ownerId = ownerId;
     }
 
-    public ItemDto(Long id, String name, String description, Boolean available) {
-        this(name, description, available);
+    public ItemBookingDto(Long id, String name, String description, Boolean available, Long ownerId) {
+        this(name, description, available, ownerId);
         this.id = id;
     }
 }

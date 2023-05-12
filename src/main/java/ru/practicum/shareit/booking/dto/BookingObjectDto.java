@@ -1,8 +1,11 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.user.User;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -10,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookingDtoId {
+public class BookingObjectDto {
 
     private Long id;
 
@@ -21,9 +24,9 @@ public class BookingDtoId {
     private LocalDateTime end;
 
     @NotNull
-    private Long itemId;
+    private Item item;
 
-    private Long bookerId;
+    private User booker;
 
     private Status status;
 }

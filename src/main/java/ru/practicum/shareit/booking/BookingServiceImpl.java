@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingIdDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.BookingObjectDto;
 import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemService;
@@ -25,10 +28,10 @@ public class BookingServiceImpl implements BookingService {
     private final UserService userService;
 
     @Override
-    public List<BookingDtoModel> getByBookerId(Long bookerId, String subState) {
+    public List<BookingObjectDto> getByBookerId(Long bookerId, String subState) {
         State state = getState(subState);
         User booker = userService.getUserById(bookerId);
-        List<BookingDtoModel> result = (switch (state) {
+        List<BookingObjectDto> result = (switch (state) {
             case ALL -> bookingRepository.findAllByBookerIdOrderByStartDesc(booker.getId());
             case CURRENT -> bookingRepository.findAllByBookerIdAndStateCurrentOrderByStartDesc(booker.getId());
             case PAST -> bookingRepository.findAllByBookerIdAndStatePastOrderByStartDesc(booker.getId());
@@ -44,10 +47,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDtoModel> getByOwnerId(Long ownerId, String subState) {
+    public List<BookingObjectDto> getByOwnerId(Long ownerId, String subState) {
         State state = getState(subState);
         User owner = userService.getUserById(ownerId);
-        List<BookingDtoModel> result = (switch (state) {
+        List<BookingObjectDto> result = (switch (state) {
             case ALL -> bookingRepository.findAllByOwnerIdOrderByStartDesc(owner.getId());
             case CURRENT -> bookingRepository.findAllByOwnerIdAndStateCurrentOrderByStartDesc(owner.getId());
             case PAST -> bookingRepository.findAllByOwnerIdAndStatePastOrderByStartDesc(owner.getId());
@@ -63,14 +66,14 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDtoModel getById(Long userId, Long bookingId) {
+    public BookingObjectDto getById(Long userId, Long bookingId) {
         Booking booking = getBookingById(bookingId);
         User booker = booking.getBooker();
         User owner = userService.getUserById(booking.getItem().getOwner());
         if (!booker.getId().equals(userId) && !owner.getId().equals(userId)) {
             throw new WrongOwnerException(userId, "Booking", bookingId);
         }
-        BookingDtoModel result = bookingRepository.findById(bookingId)
+        BookingObjectDto result = bookingRepository.findById(bookingId)
                 .map(BookingMapper::mapToDtoModel)
                 .orElseThrow(() -> new ObjectNotFoundException("Booking", bookingId));
         log.info("Booking {} is found.", result.getId());
@@ -79,9 +82,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingDtoModel create(Long userId, BookingDtoId bookingDtoId) {
+    public BookingObjectDto create(Long userId, BookingIdDto bookingIdDto) {
         User booker = userService.getUserById(userId);
-        Item item = itemService.getItemById(bookingDtoId.getItemId());
+        Item item = itemService.getItemById(bookingIdDto.getItemId());
         if (booker.getId().equals(item.getOwner())) {
             throw new WrongBookerException();
         }
@@ -90,13 +93,13 @@ public class BookingServiceImpl implements BookingService {
             throw new ItemUnavailableException(item.getId());
         }
 
-        DateTimeValidator.validate(bookingDtoId.getStart(), bookingDtoId.getEnd());
+        DateTimeValidator.validate(bookingIdDto.getStart(), bookingIdDto.getEnd());
 
         Booking booking = new Booking();
         booking.setItem(item);
         booking.setBooker(booker);
-        BookingDtoModel result =
-                Optional.of(bookingRepository.save(BookingMapper.mapToBooking(bookingDtoId, booking)))
+        BookingObjectDto result =
+                Optional.of(bookingRepository.save(BookingMapper.mapToBooking(bookingIdDto, booking)))
                         .map(BookingMapper::mapToDtoModel)
                         .orElseThrow(() -> new ObjectCreationException("Booking", booking.getItem().getName()));
         log.info("Booking {} {} created.", result.getId(), result.getItem().getName());
@@ -105,13 +108,13 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingDtoModel update(Long userId, Long itemId, BookingDtoId bookingDtoId) {
+    public BookingObjectDto update(Long userId, Long itemId, BookingIdDto bookingIdDto) {
         return null;
     }
 
     @Transactional
     @Override
-    public BookingDtoModel approve(Long userId, Long bookingId, Boolean isApproved) {
+    public BookingObjectDto approve(Long userId, Long bookingId, Boolean isApproved) {
         User owner = userService.getUserById(userId);
         Booking booking = getBookingById(bookingId);
         Item item = itemService.getItemById(booking.getItem().getId());

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.practicum.shareit.item.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserDto;
@@ -22,7 +22,7 @@ class ItemServiceImplTest {
     @Test
     void create_return1Item_added5Items() {
         addData();
-        assertThat(itemService.getById(2L))
+        assertThat(itemService.getById(2L, 2L))
                 .hasFieldOrPropertyWithValue("name", "Кирпич")
                 .hasFieldOrPropertyWithValue("description", "При помощи веревки может стать оружием масового поражения");
     }
@@ -30,11 +30,11 @@ class ItemServiceImplTest {
     @Test
     void update_returnUpdatedItem_add5Items() {
         addData();
-        assertThat(itemService.getById(2L))
+        assertThat(itemService.getById(2L, 2L))
                 .hasFieldOrPropertyWithValue("name", "Кирпич")
                 .hasFieldOrPropertyWithValue("description", "При помощи веревки может стать оружием масового поражения");
-        itemService.update(2L, 2L, new ItemDto("Щебень", "Не пережил прошлую аренду", true));
-        assertThat(itemService.getById(2L))
+        itemService.update(2L, 2L, new ItemDto("Щебень", "Не пережил прошлую аренду", true, 1L));
+        assertThat(itemService.getById(2L, 2L))
                 .hasFieldOrPropertyWithValue("name", "Щебень")
                 .hasFieldOrPropertyWithValue("description", "Не пережил прошлую аренду");
     }
@@ -42,7 +42,7 @@ class ItemServiceImplTest {
     @Test
     void getById_returnItemWith3Id_added5Items() {
         addData();
-        assertThat(itemService.getById(3L))
+        assertThat(itemService.getById(3L, 3L))
                 .hasFieldOrPropertyWithValue("name", "Барбос")
                 .hasFieldOrPropertyWithValue("description", "Для защиты от людей, грызунов и крупного рогатого скота, требуется палка");
     }
@@ -64,10 +64,10 @@ class ItemServiceImplTest {
         userService.create(new UserDto("Mirko", "crocop@yandex.ru"));
         userService.create(new UserDto("Alex", "emel@yandex.ru"));
 
-        itemService.create(1L, new ItemDto("Вставной глаз", "Для охмурения мамзелей", true));
-        itemService.create(2L, new ItemDto("Кирпич", "При помощи веревки может стать оружием масового поражения", true));
-        itemService.create(3L, new ItemDto("Барбос", "Для защиты от людей, грызунов и крупного рогатого скота, требуется палка", true));
-        itemService.create(2L, new ItemDto("Палка", "Колупалка", true));
-        itemService.create(3L, new ItemDto("Ведро", "Не ведро", true));
+        itemService.create(1L, new ItemDto("Вставной глаз", "Для охмурения мамзелей", true, 1L));
+        itemService.create(2L, new ItemDto("Кирпич", "При помощи веревки может стать оружием масового поражения", true, 2L));
+        itemService.create(3L, new ItemDto("Барбос", "Для защиты от людей, грызунов и крупного рогатого скота, требуется палка", true, 2L));
+        itemService.create(2L, new ItemDto("Палка", "Колупалка", true, 3L));
+        itemService.create(3L, new ItemDto("Ведро", "Не ведро", true, 3L));
     }
 }

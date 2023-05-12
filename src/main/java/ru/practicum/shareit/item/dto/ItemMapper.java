@@ -1,12 +1,23 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.dto;
+
+import ru.practicum.shareit.item.Item;
 
 public class ItemMapper {
 
-    public static ItemDto mapToDto(Item item) {
+    public static ItemDto mapToItemDto(Item item) {
         return new ItemDto(item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.isAvailable());
+                item.isAvailable(),
+                item.getOwner());
+    }
+
+    public static ItemBookingDto mapToItemBookingDto(Item item) {
+        return new ItemBookingDto(item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.isAvailable(),
+                item.getOwner());
     }
 
     public static Item mapToItem(ItemDto itemDto, Item item) {
