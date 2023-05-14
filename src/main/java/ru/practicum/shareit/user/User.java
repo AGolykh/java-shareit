@@ -12,11 +12,9 @@ import javax.persistence.*;
 public class User {
 
     @Id
-    @Column(name = "USER_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "USER_NAME")
     private String name;
 
     private String email;

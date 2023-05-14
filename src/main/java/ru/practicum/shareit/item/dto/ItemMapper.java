@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.dto;
 
-import ru.practicum.shareit.exception.ObjectCreationException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.dto.UserMapper;
 
@@ -33,7 +32,7 @@ public class ItemMapper {
         if (itemUpdateDto.getName() == null
                 && itemUpdateDto.getDescription() == null
                 && itemUpdateDto.getAvailable() == null) {
-            throw new ObjectCreationException("Item", item.getName());
+            //throw new ObjectCreationException("Item", item.getName());
         }
 
         if (itemUpdateDto.getName() != null) {

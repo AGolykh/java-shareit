@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.dto;
 
-import ru.practicum.shareit.exception.ObjectCreationException;
 import ru.practicum.shareit.user.User;
 
 public class UserMapper {
@@ -24,7 +23,7 @@ public class UserMapper {
 
     public static User mapToUpdateUser(UserUpdateDto userUpdateDto, User user) {
         if (userUpdateDto.getName() == null && userUpdateDto.getEmail() == null) {
-            throw new ObjectCreationException("User", user.getName());
+            //qqqqqqqqqqqqqqqqqqqqqqqqqqq
         }
 
         if (userUpdateDto.getName() != null) {

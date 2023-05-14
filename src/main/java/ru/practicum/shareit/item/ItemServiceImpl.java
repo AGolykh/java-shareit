@@ -80,7 +80,7 @@ class ItemServiceImpl implements ItemService {
         ItemFullDto result = itemRepository
                 .findById(itemId)
                 .map(ItemMapper::mapToFullDto)
-                .orElseThrow(() -> new ObjectNotFoundException("Item", itemId));
+                .orElseThrow(() -> new NullPointerException(String.format("Item %d is not found.", itemId)));
 
         if (result.getOwner().getId().equals(userId)) {
             result.setLastBooking(bookingRepository
@@ -114,7 +114,7 @@ class ItemServiceImpl implements ItemService {
         item.setOwner(user);
         ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToNewItem(itemInputDto, item)))
                 .map(ItemMapper::mapToFullDto)
-                .orElseThrow(() -> new ObjectCreationException("Item", itemInputDto.getName()));
+                .orElseThrow(/*() -> new ObjectCreationException("Item", itemInputDto.getName())*/);
         log.info("Item {} {} created.", result.getId(), result.getName());
         return result;
     }
@@ -129,7 +129,7 @@ class ItemServiceImpl implements ItemService {
         }
         ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToUpdateItem(itemUpdateDto, oldItem)))
                 .map(ItemMapper::mapToFullDto)
-                .orElseThrow(() -> new ObjectCreationException("Item", oldItem.getName()));
+                .orElseThrow(/*() -> new ObjectCreationException("Item", oldItem.getName())*/);
         log.info("Item {} {} updated.", result.getId(), result.getName());
         return result;
     }
@@ -137,7 +137,7 @@ class ItemServiceImpl implements ItemService {
     public Item getItemById(Long itemId) {
         return itemRepository
                 .findById(itemId)
-                .orElseThrow(() -> new ObjectNotFoundException("Item", itemId));
+                .orElseThrow(() -> new NullPointerException(String.format("Item %d is not found.", itemId)));
     }
 
     @Override
@@ -157,7 +157,7 @@ class ItemServiceImpl implements ItemService {
         CommentFullDto commentFullDto =
                 Optional.of(commentRepository.save(CommentMapper.mapToComment(commentInputDto, comment)))
                         .map(CommentMapper::mapToFullDto)
-                        .orElseThrow(() -> new ObjectCreationException("Comment", item.getName()));
+                        .orElseThrow(/*() -> new ObjectCreationException("Comment", item.getName())*/);
         log.info("Comment {} added to item {}.", commentFullDto.getId(), item.getId());
         return commentFullDto;
     }

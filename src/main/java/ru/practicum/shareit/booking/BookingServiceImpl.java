@@ -110,7 +110,7 @@ public class BookingServiceImpl implements BookingService {
         }
         BookingFullDto result = bookingRepository.findById(bookingId)
                 .map(BookingMapper::mapToFullDto)
-                .orElseThrow(() -> new ObjectNotFoundException("Booking", bookingId));
+                .orElseThrow(() -> new NullPointerException(String.format("Booking %d is not found.", bookingId)));
         log.info("Booking {} is found.", result.getId());
         return result;
     }
@@ -125,7 +125,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (!item.isAvailable()) {
-            throw new ItemUnavailableException(item.getId());
+            throw new IllegalStateException(String.format("Item %d is unavailable.", item.getId()));
         }
 
         DateTimeValidator.validate(bookingInputDto.getStart(), bookingInputDto.getEnd());
@@ -136,7 +136,7 @@ public class BookingServiceImpl implements BookingService {
         BookingFullDto result =
                 Optional.of(bookingRepository.save(BookingMapper.mapToBooking(bookingInputDto, booking)))
                         .map(BookingMapper::mapToFullDto)
-                        .orElseThrow(() -> new ObjectCreationException("Booking", booking.getItem().getName()));
+                        .orElseThrow();
         log.info("Booking {} {} created.", result.getId(), result.getItem().getName());
         return result;
     }
@@ -150,7 +150,7 @@ public class BookingServiceImpl implements BookingService {
         Status newStatus = isApproved ? Status.APPROVED : Status.REJECTED;
 
         if (!booking.getStatus().equals(Status.WAITING) && owner.getId().equals(item.getOwner().getId())) {
-            throw new ObjectUpdateException("Booking", booking.getId().toString());
+            throw new IllegalStateException(String.format("Booking %d cannot be updated", bookingId));
         }
         if (!owner.getId().equals(item.getOwner().getId())) {
             throw new WrongOwnerException(userId, "Item", item.getId());
@@ -165,7 +165,7 @@ public class BookingServiceImpl implements BookingService {
     public Booking getBookingById(Long bookingId) {
         return bookingRepository
                 .findById(bookingId)
-                .orElseThrow(() -> new ObjectNotFoundException("Object", bookingId));
+                .orElseThrow(() -> new NullPointerException(String.format("Booking %d is not found.", bookingId)));
     }
 
     private State getState(String state) {

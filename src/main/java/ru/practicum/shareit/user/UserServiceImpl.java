@@ -3,8 +3,6 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.ObjectCreationException;
-import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.user.dto.*;
 
 import java.util.List;
@@ -33,7 +31,7 @@ class UserServiceImpl implements UserService {
         UserFullDto result = userRepository
                 .findById(userId)
                 .map(UserMapper::mapToFullDto)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> new NullPointerException(String.format("User %d is not found.", userId)));
         log.info("User {} is found.", result.getId());
         return result;
     }
@@ -43,7 +41,7 @@ class UserServiceImpl implements UserService {
         User user = UserMapper.mapToNewUser(userInputDto, new User());
         UserFullDto result = Optional.of(userRepository.save(user))
                 .map(UserMapper::mapToFullDto)
-                .orElseThrow(() -> new ObjectCreationException("User", user.getName()));
+                .orElseThrow(/*() -> new ObjectCreationException("User", user.getName())*/);
         log.info("User {} {} created.", result.getId(), result.getName());
         return result;
     }
@@ -53,7 +51,7 @@ class UserServiceImpl implements UserService {
         User oldUser = getUserById(userId);
         UserFullDto result = Optional.of(userRepository.save(UserMapper.mapToUpdateUser(userUpdateDto, oldUser)))
                 .map(UserMapper::mapToFullDto)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> new NullPointerException(String.format("User %d is not found.", userId)));
         log.info("User {} {} updated.", result.getId(), result.getName());
         return result;
     }
@@ -69,7 +67,7 @@ class UserServiceImpl implements UserService {
     public User getUserById(Long userId) {
         User result = userRepository
                 .findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundException("User", userId));
+                .orElseThrow(() -> new NullPointerException(String.format("User %d is not found.", userId)));
         log.info("User {} is found.", result.getId());
         return result;
     }
