@@ -14,24 +14,18 @@ public class UserMapper {
                 user.getName());
     }
 
-    public static User mapToNewUser(UserInputDto userInputDto, User user) {
-        user.setName(userInputDto.getName());
-        user.setEmail(userInputDto.getEmail());
 
-        return user;
-    }
-
-    public static User mapToUpdateUser(UserUpdateDto userUpdateDto, User user) {
-        if (userUpdateDto.getName() == null && userUpdateDto.getEmail() == null) {
-            //qqqqqqqqqqqqqqqqqqqqqqqqqqq
+    public static User mapToUser(UserInputDto userInputDto, User user) {
+        if (userInputDto.getId() != null) {
+            user.setId(userInputDto.getId());
         }
 
-        if (userUpdateDto.getName() != null) {
-            user.setName(userUpdateDto.getName());
+        if (userInputDto.getName() != null) {
+            user.setName(userInputDto.getName());
         }
 
-        if (userUpdateDto.getEmail() != null) {
-            user.setEmail(userUpdateDto.getEmail());
+        if (userInputDto.getEmail() != null) {
+            user.setEmail(userInputDto.getEmail());
         }
 
         return user;

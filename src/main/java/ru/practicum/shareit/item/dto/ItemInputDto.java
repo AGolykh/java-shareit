@@ -10,9 +10,13 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ItemInputDto {
 
+    private Long itemId;
+
+    @NotNull
     @NotBlank
     private String name;
 
+    @NotNull
     @NotBlank
     private String description;
 

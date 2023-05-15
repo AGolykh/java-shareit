@@ -38,18 +38,18 @@ class UserServiceImpl implements UserService {
 
     @Override
     public UserFullDto create(UserInputDto userInputDto) {
-        User user = UserMapper.mapToNewUser(userInputDto, new User());
+        User user = UserMapper.mapToUser(userInputDto, new User());
         UserFullDto result = Optional.of(userRepository.save(user))
                 .map(UserMapper::mapToFullDto)
-                .orElseThrow(/*() -> new ObjectCreationException("User", user.getName())*/);
+                .orElseThrow();
         log.info("User {} {} created.", result.getId(), result.getName());
         return result;
     }
 
     @Override
-    public UserFullDto update(UserUpdateDto userUpdateDto, Long userId) {
+    public UserFullDto update(UserInputDto userInputDto, Long userId) {
         User oldUser = getUserById(userId);
-        UserFullDto result = Optional.of(userRepository.save(UserMapper.mapToUpdateUser(userUpdateDto, oldUser)))
+        UserFullDto result = Optional.of(userRepository.save(UserMapper.mapToUser(userInputDto, oldUser)))
                 .map(UserMapper::mapToFullDto)
                 .orElseThrow(() -> new NullPointerException(String.format("User %d is not found.", userId)));
         log.info("User {} {} updated.", result.getId(), result.getName());

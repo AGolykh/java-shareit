@@ -6,18 +6,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ValidationException;
+import java.util.NoSuchElementException;
+
 @Slf4j
 @RestControllerAdvice
 
 public class ErrorHandler {
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handle(final ValidateTimeException e) {
-        return new ErrorResponse(
-                e.getMessage()
-        );
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -35,6 +30,15 @@ public class ErrorHandler {
         );
     }
 
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle(final ValidationException e) {
+        return new ErrorResponse(
+                e.getCause().getMessage()
+        );
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handle(final IllegalStateException e) {
@@ -45,15 +49,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(final WrongOwnerException e) {
-        return new ErrorResponse(
-                e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(final WrongBookerException e) {
+    public ErrorResponse handle(final IllegalArgumentException e) {
         return new ErrorResponse(
                 e.getMessage()
         );
@@ -61,7 +57,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handle(final WrongAuthorException e) {
+    public ErrorResponse handle(final NoSuchElementException e) {
         return new ErrorResponse(
                 e.getMessage()
         );

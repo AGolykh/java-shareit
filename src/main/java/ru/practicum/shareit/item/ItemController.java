@@ -6,7 +6,6 @@ import ru.practicum.shareit.comment.dto.CommentFullDto;
 import ru.practicum.shareit.comment.dto.CommentInputDto;
 import ru.practicum.shareit.item.dto.ItemFullDto;
 import ru.practicum.shareit.item.dto.ItemInputDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -27,9 +26,9 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemFullDto update(@RequestHeader("X-Sharer-User-Id") Long userId,
-                          @RequestBody ItemUpdateDto itemUpdateDto,
+                          @RequestBody ItemInputDto itemInputDto,
                           @PathVariable Long itemId) {
-        return itemService.update(userId, itemId, itemUpdateDto);
+        return itemService.update(userId, itemId, itemInputDto);
     }
 
     @GetMapping("/{itemId}")

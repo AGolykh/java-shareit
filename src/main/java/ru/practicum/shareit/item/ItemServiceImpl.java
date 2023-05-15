@@ -11,7 +11,6 @@ import ru.practicum.shareit.comment.CommentRepository;
 import ru.practicum.shareit.comment.dto.CommentFullDto;
 import ru.practicum.shareit.comment.dto.CommentInputDto;
 import ru.practicum.shareit.comment.dto.CommentMapper;
-import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.dto.*;
 
 import ru.practicum.shareit.user.User;
@@ -20,6 +19,7 @@ import ru.practicum.shareit.user.UserService;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,26 +51,8 @@ class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemFullDto> getByUserId(Long userId) {
         List<ItemFullDto> result = itemRepository.findAllByOwnerId(userId).stream()
-                .map(item -> {
-                    ItemFullDto itemFullDto = ItemMapper.mapToFullDto(item);
-
-                    if (itemFullDto.getOwner().getId().equals(userId)) {
-                        itemFullDto.setLastBooking(bookingRepository
-                                .findFirstByItemIdAndStartBeforeAndStatusOrderByEndDesc(item.getId(),
-                                        LocalDateTime.now(),
-                                        Status.APPROVED)
-                                .map(BookingMapper::mapToShortDto)
-                                .orElse(null));
-
-                        itemFullDto.setNextBooking(bookingRepository
-                                .findFirstByItemIdAndStartAfterAndStatusOrderByEndAsc(item.getId(),
-                                        LocalDateTime.now(),
-                                        Status.APPROVED)
-                                .map(BookingMapper::mapToShortDto)
-                                .orElse(null));
-                    }
-                    return itemFullDto;
-                }).collect(Collectors.toList());
+                .map(item -> addData(userId, item))
+                .collect(Collectors.toList());
         log.info("Found {} item(s).", result.size());
         return result;
     }
@@ -79,8 +61,69 @@ class ItemServiceImpl implements ItemService {
     public ItemFullDto getById(Long userId, Long itemId) {
         ItemFullDto result = itemRepository
                 .findById(itemId)
-                .map(ItemMapper::mapToFullDto)
+                .map(item -> addData(userId, item))
                 .orElseThrow(() -> new NullPointerException(String.format("Item %d is not found.", itemId)));
+        log.info("User {} is found.", result.getId());
+        return result;
+    }
+
+    @Override
+    public ItemFullDto create(Long userId, ItemInputDto itemInputDto) {
+        User user = userService.getUserById(userId);
+        Item item = new Item();
+        item.setOwner(user);
+        ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(itemInputDto, item)))
+                .map(ItemMapper::mapToFullDto)
+                .orElseThrow();
+        log.info("Item {} {} created.", result.getId(), result.getName());
+        return result;
+    }
+
+    @Override
+    public ItemFullDto update(Long userId, Long itemId, ItemInputDto itemInputDto) {
+        User user = userService.getUserById(userId);
+        Item oldItem = getItemById(itemId);
+        if (!user.getId().equals(oldItem.getOwner().getId())) {
+            log.warn("User {} is not the owner of the item {}.", userId, oldItem.getId());
+            throw new IllegalArgumentException("Only the owner can edit an item");
+        }
+        ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(itemInputDto, oldItem)))
+                .map(ItemMapper::mapToFullDto)
+                .orElseThrow();
+        log.info("Item {} {} updated.", result.getId(), result.getName());
+        return result;
+    }
+
+    public Item getItemById(Long itemId) {
+        return itemRepository
+                .findById(itemId)
+                .orElseThrow(() -> new NullPointerException(String.format("Item %d is not found.", itemId)));
+    }
+
+    @Override
+    public CommentFullDto addComment(Long userId, Long itemId, CommentInputDto commentInputDto) {
+        User author = userService.getUserById(userId);
+        Item item = getItemById(itemId);
+
+        if (!bookingRepository
+                .existsByBookerIdAndItemIdAndEndBefore(author.getId(), item.getId(), LocalDateTime.now())) {
+            throw new NoSuchElementException("The user has not booked this item.");
+        }
+
+        Comment comment = new Comment();
+        comment.setItem(item);
+        comment.setAuthor(author);
+
+        CommentFullDto commentFullDto =
+                Optional.of(commentRepository.save(CommentMapper.mapToComment(commentInputDto, comment)))
+                        .map(CommentMapper::mapToFullDto)
+                        .orElseThrow();
+        log.info("Comment {} added to item {}.", commentFullDto.getId(), item.getId());
+        return commentFullDto;
+    }
+
+    public ItemFullDto addData(Long userId, Item item) {
+        ItemFullDto result = ItemMapper.mapToFullDto(item);
 
         if (result.getOwner().getId().equals(userId)) {
             result.setLastBooking(bookingRepository
@@ -103,62 +146,6 @@ class ItemServiceImpl implements ItemService {
                 .map(CommentMapper::mapToFullDto)
                 .collect(Collectors.toList()));
 
-        log.info("User {} is found.", result.getId());
         return result;
-    }
-
-    @Override
-    public ItemFullDto create(Long userId, ItemInputDto itemInputDto) {
-        User user = userService.getUserById(userId);
-        Item item = new Item();
-        item.setOwner(user);
-        ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToNewItem(itemInputDto, item)))
-                .map(ItemMapper::mapToFullDto)
-                .orElseThrow(/*() -> new ObjectCreationException("Item", itemInputDto.getName())*/);
-        log.info("Item {} {} created.", result.getId(), result.getName());
-        return result;
-    }
-
-    @Override
-    public ItemFullDto update(Long userId, Long itemId, ItemUpdateDto itemUpdateDto) {
-        User user = userService.getUserById(userId);
-        Item oldItem = getItemById(itemId);
-        if (!user.getId().equals(oldItem.getOwner().getId())) {
-            log.warn("User {} is not the owner of the item {}.", userId, oldItem.getId());
-            throw new WrongOwnerException(userId, "Item", oldItem.getId());
-        }
-        ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToUpdateItem(itemUpdateDto, oldItem)))
-                .map(ItemMapper::mapToFullDto)
-                .orElseThrow(/*() -> new ObjectCreationException("Item", oldItem.getName())*/);
-        log.info("Item {} {} updated.", result.getId(), result.getName());
-        return result;
-    }
-
-    public Item getItemById(Long itemId) {
-        return itemRepository
-                .findById(itemId)
-                .orElseThrow(() -> new NullPointerException(String.format("Item %d is not found.", itemId)));
-    }
-
-    @Override
-    public CommentFullDto addComment(Long userId, Long itemId, CommentInputDto commentInputDto) {
-        User author = userService.getUserById(userId);
-        Item item = getItemById(itemId);
-
-        if (!bookingRepository
-                .existsByBookerIdAndItemIdAndEndBefore(author.getId(), item.getId(), LocalDateTime.now())) {
-            throw new WrongAuthorException();
-        }
-
-        Comment comment = new Comment();
-        comment.setItem(item);
-        comment.setAuthor(author);
-
-        CommentFullDto commentFullDto =
-                Optional.of(commentRepository.save(CommentMapper.mapToComment(commentInputDto, comment)))
-                        .map(CommentMapper::mapToFullDto)
-                        .orElseThrow(/*() -> new ObjectCreationException("Comment", item.getName())*/);
-        log.info("Comment {} added to item {}.", commentFullDto.getId(), item.getId());
-        return commentFullDto;
     }
 }

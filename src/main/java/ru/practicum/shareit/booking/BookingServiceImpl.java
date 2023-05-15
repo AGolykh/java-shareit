@@ -10,7 +10,6 @@ import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
-import ru.practicum.shareit.validators.DateTimeValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +105,8 @@ public class BookingServiceImpl implements BookingService {
         User booker = booking.getBooker();
         User owner = userService.getUserById(booking.getItem().getOwner().getId());
         if (!booker.getId().equals(userId) && !owner.getId().equals(userId)) {
-            throw new WrongOwnerException(userId, "Booking", bookingId);
+            throw new IllegalArgumentException("The booking can only be viewed " +
+                    "by the author or the owner of the item.");
         }
         BookingFullDto result = bookingRepository.findById(bookingId)
                 .map(BookingMapper::mapToFullDto)
@@ -120,15 +120,14 @@ public class BookingServiceImpl implements BookingService {
     public BookingFullDto create(Long userId, BookingInputDto bookingInputDto) {
         User booker = userService.getUserById(userId);
         Item item = itemService.getItemById(bookingInputDto.getItemId());
+
         if (booker.getId().equals(item.getOwner().getId())) {
-            throw new WrongBookerException();
+            throw new IllegalArgumentException("The owner cannot book his own things");
         }
 
         if (!item.isAvailable()) {
             throw new IllegalStateException(String.format("Item %d is unavailable.", item.getId()));
         }
-
-        DateTimeValidator.validate(bookingInputDto.getStart(), bookingInputDto.getEnd());
 
         Booking booking = new Booking();
         booking.setItem(item);
@@ -153,7 +152,7 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalStateException(String.format("Booking %d cannot be updated", bookingId));
         }
         if (!owner.getId().equals(item.getOwner().getId())) {
-            throw new WrongOwnerException(userId, "Item", item.getId());
+            throw new IllegalArgumentException("Only the owner of the item can confirm the booking.");
         }
 
         booking.setStatus(newStatus);

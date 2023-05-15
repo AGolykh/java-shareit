@@ -20,31 +20,19 @@ public class ItemMapper {
                 item.isAvailable());
     }
 
-    public static Item mapToNewItem(ItemInputDto itemInputDto, Item item) {
-        item.setName(itemInputDto.getName());
-        item.setDescription(itemInputDto.getDescription());
-        item.setAvailable(itemInputDto.getAvailable());
-        return item;
-    }
 
-    public static Item mapToUpdateItem(ItemUpdateDto itemUpdateDto, Item item) {
+    public static Item mapToItem(ItemInputDto itemInputDto, Item item) {
 
-        if (itemUpdateDto.getName() == null
-                && itemUpdateDto.getDescription() == null
-                && itemUpdateDto.getAvailable() == null) {
-            //throw new ObjectCreationException("Item", item.getName());
+        if (itemInputDto.getName() != null) {
+            item.setName(itemInputDto.getName());
         }
 
-        if (itemUpdateDto.getName() != null) {
-            item.setName(itemUpdateDto.getName());
+        if (itemInputDto.getDescription() != null) {
+            item.setDescription(itemInputDto.getDescription());
         }
 
-        if (itemUpdateDto.getDescription() != null) {
-            item.setDescription(itemUpdateDto.getDescription());
-        }
-
-        if (itemUpdateDto.getAvailable() != null) {
-            item.setAvailable(itemUpdateDto.getAvailable());
+        if (itemInputDto.getAvailable() != null) {
+            item.setAvailable(itemInputDto.getAvailable());
         }
 
         return item;

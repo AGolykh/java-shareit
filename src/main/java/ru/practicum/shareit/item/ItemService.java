@@ -16,7 +16,7 @@ public interface ItemService {
 
     ItemFullDto create(Long userId, ItemInputDto itemInputDto);
 
-    ItemFullDto update(Long userId, Long itemId, ItemUpdateDto itemUpdateDto);
+    ItemFullDto update(Long userId, Long itemId, ItemInputDto itemInputDto);
 
     Item getItemById(Long itemId);
 
