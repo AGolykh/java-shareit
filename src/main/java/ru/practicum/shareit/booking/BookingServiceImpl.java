@@ -1,7 +1,11 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.*;
@@ -26,30 +30,35 @@ public class BookingServiceImpl implements BookingService {
     private final UserService userService;
 
     @Override
-    public List<BookingFullDto> getByBookerId(Long bookerId, String subState) {
+    public List<BookingFullDto> getByBookerId(Long bookerId, String subState, Integer from, Integer size) {
         State state = getState(subState);
         User booker = userService.getUserById(bookerId);
         List<Booking> bookings = new ArrayList<>();
+        Pageable pageable = getPage(from, size);
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(booker.getId());
+                bookings = bookingRepository.
+                        findAllByBookerId(booker.getId(), pageable);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByBookerIdAndStateCurrentOrderByStartDesc(booker.getId());
+                bookings = bookingRepository.
+                        findAllByBookerIdAndStateCurrent(booker.getId(), pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByBookerIdAndStatePastOrderByStartDesc(booker.getId());
+                bookings = bookingRepository.
+                        findAllByBookerIdAndStatePast( booker.getId(), pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByBookerIdAndStateFutureOrderByStartDesc(booker.getId());
+                bookings = bookingRepository.
+                        findAllByBookerIdAndStateFuture(booker.getId(), pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(booker.getId(),
-                        Status.WAITING);
+                bookings = bookingRepository.
+                        findAllByBookerIdAndStatus(booker.getId(), Status.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(booker.getId(),
-                        Status.REJECTED);
+                bookings = bookingRepository
+                        .findAllByBookerIdAndStatus(booker.getId(), Status.REJECTED, pageable);
                 break;
         }
 
@@ -63,30 +72,35 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingFullDto> getByOwnerId(Long ownerId, String subState) {
+    public List<BookingFullDto> getByOwnerId(Long ownerId, String subState, Integer from, Integer size) {
         State state = getState(subState);
         User owner = userService.getUserById(ownerId);
         List<Booking> bookings = new ArrayList<>();
+        Pageable pageable = getPage(from, size);
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findAllByOwnerIdOrderByStartDesc(owner.getId());
+                bookings = bookingRepository
+                        .findAllByOwnerId(owner.getId(), pageable);
                 break;
             case CURRENT:
-                bookings = bookingRepository.findAllByOwnerIdAndStateCurrentOrderByStartDesc(owner.getId());
+                bookings = bookingRepository
+                        .findAllByOwnerIdAndStateCurrent(owner.getId(), pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByOwnerIdAndStatePastOrderByStartDesc(owner.getId());
+                bookings = bookingRepository
+                        .findAllByOwnerIdAndStatePast(owner.getId(), pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByOwnerIdAndStateFutureOrderByStartDesc(owner.getId());
+                bookings = bookingRepository
+                        .findAllByOwnerIdAndStateFuture(owner.getId(), pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository.findAllByOwnerIdAndStatusOrderByStartDesc(owner.getId(),
-                        Status.WAITING);
+                bookings = bookingRepository
+                        .findAllByOwnerIdAndStatus(owner.getId(), Status.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findAllByOwnerIdAndStatusOrderByStartDesc(owner.getId(),
-                        Status.REJECTED);
+                bookings = bookingRepository
+                        .findAllByOwnerIdAndStatus(owner.getId(), Status.REJECTED, pageable);
                 break;
         }
 
@@ -99,13 +113,14 @@ public class BookingServiceImpl implements BookingService {
         return result;
     }
 
+    @SneakyThrows
     @Override
     public BookingFullDto getById(Long userId, Long bookingId) {
         Booking booking = getBookingById(bookingId);
         User booker = booking.getBooker();
         User owner = userService.getUserById(booking.getItem().getOwner().getId());
         if (!booker.getId().equals(userId) && !owner.getId().equals(userId)) {
-            throw new IllegalArgumentException("The booking can only be viewed " +
+            throw new IllegalAccessException("The booking can only be viewed " +
                     "by the author or the owner of the item.");
         }
         BookingFullDto result = bookingRepository.findById(bookingId)
@@ -115,6 +130,7 @@ public class BookingServiceImpl implements BookingService {
         return result;
     }
 
+    @SneakyThrows
     @Transactional
     @Override
     public BookingFullDto create(Long userId, BookingInputDto bookingInputDto) {
@@ -122,7 +138,7 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemService.getItemById(bookingInputDto.getItemId());
 
         if (booker.getId().equals(item.getOwner().getId())) {
-            throw new IllegalArgumentException("The owner cannot book his own things");
+            throw new IllegalAccessException("The owner cannot book his own things");
         }
 
         if (!item.isAvailable()) {
@@ -140,22 +156,22 @@ public class BookingServiceImpl implements BookingService {
         return result;
     }
 
+    @SneakyThrows
     @Transactional
     @Override
     public BookingFullDto approve(Long userId, Long bookingId, Boolean isApproved) {
         User owner = userService.getUserById(userId);
         Booking booking = getBookingById(bookingId);
         Item item = itemService.getItemById(booking.getItem().getId());
-        Status newStatus = isApproved ? Status.APPROVED : Status.REJECTED;
 
         if (!booking.getStatus().equals(Status.WAITING) && owner.getId().equals(item.getOwner().getId())) {
             throw new IllegalStateException(String.format("Booking %d cannot be updated", bookingId));
         }
         if (!owner.getId().equals(item.getOwner().getId())) {
-            throw new IllegalArgumentException("Only the owner of the item can confirm the booking.");
+            throw new IllegalAccessException("Only the owner of the item can confirm the booking.");
         }
 
-        booking.setStatus(newStatus);
+        booking.setStatus(isApproved ? Status.APPROVED : Status.REJECTED);
         log.info("Booking status changed to {}.", booking.getStatus());
         return BookingMapper.mapToFullDto(booking);
     }
@@ -173,5 +189,12 @@ public class BookingServiceImpl implements BookingService {
         } catch (IllegalArgumentException e) {
             throw new UnknownStateException(state);
         }
+    }
+
+    private PageRequest getPage(Integer from, Integer size) {
+        if (size <= 0 || from < 0) {
+            throw new IllegalArgumentException("Page size must not be less than one.");
+        }
+        return PageRequest.of(from / size, size, Sort.by("start").descending());
     }
 }

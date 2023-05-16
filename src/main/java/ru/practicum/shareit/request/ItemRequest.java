@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class ItemRequest {
 
     @Id
-    @Column(name = "REQUEST_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -24,5 +23,5 @@ public class ItemRequest {
     @JoinColumn(name = "REQUESTOR_ID")
     private User requestor;
 
-    private LocalDateTime added;
+    private LocalDateTime created;
 }
