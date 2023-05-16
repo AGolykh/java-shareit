@@ -5,62 +5,61 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.exception.item.ItemCreationException;
-import ru.practicum.shareit.exception.item.ItemNotFoundException;
-import ru.practicum.shareit.exception.user.EmailConflictException;
-import ru.practicum.shareit.exception.user.UserCreationException;
-import ru.practicum.shareit.exception.user.UserNotFoundException;
-import ru.practicum.shareit.exception.item.WrongOwnerException;
+
+import javax.validation.ValidationException;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestControllerAdvice
 
 public class ErrorHandler {
+
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(final UserNotFoundException e) {
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handle(final UnknownStateException e) {
         return new ErrorResponse(
-                "error", e.getMessage()
+                e.getMessage()
         );
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(final ItemNotFoundException e) {
+    public ErrorResponse handle(final NullPointerException e) {
         return new ErrorResponse(
-                "error", e.getMessage()
+                e.getMessage()
+        );
+    }
+
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle(final ValidationException e) {
+        return new ErrorResponse(
+                e.getCause().getMessage()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle(final IllegalStateException e) {
+        return new ErrorResponse(
+                e.getMessage()
         );
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(final WrongOwnerException e) {
+    public ErrorResponse handle(final IllegalArgumentException e) {
         return new ErrorResponse(
-                "error", e.getMessage()
+                e.getMessage()
         );
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handle(final UserCreationException e) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handle(final NoSuchElementException e) {
         return new ErrorResponse(
-                "error", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handle(final ItemCreationException e) {
-        return new ErrorResponse(
-                "error", e.getMessage()
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handle(final EmailConflictException e) {
-        return new ErrorResponse(
-                "error ", e.getMessage()
+                e.getMessage()
         );
     }
 }

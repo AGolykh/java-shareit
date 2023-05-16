@@ -1,6 +1,7 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.comment;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
@@ -11,27 +12,23 @@ import java.time.LocalDateTime;
 @Data
 @RequiredArgsConstructor
 @Entity
-@Table(name = "BOOKINGS", schema = "PUBLIC")
-public class Booking {
+@EqualsAndHashCode
+@Table(name = "COMMENTS", schema = "PUBLIC")
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "START_TIME")
-    private LocalDateTime start;
-
-    @Column(name = "END_TIME")
-    private LocalDateTime end;
+    private String text;
 
     @ManyToOne
     @JoinColumn(name = "ITEM_ID")
     private Item item;
 
     @ManyToOne
-    @JoinColumn(name = "BOOKER_ID")
-    private User booker;
+    @JoinColumn(name = "AUTHOR_ID")
+    private User author;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    private LocalDateTime created;
 }
