@@ -10,6 +10,9 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.isAvailable(),
+                item.getItemRequest() != null
+                        ? item.getItemRequest().getId()
+                        : null,
                 UserMapper.mapToShortDto(item.getOwner()));
     }
 
@@ -17,7 +20,10 @@ public class ItemMapper {
         return new ItemShortDto(item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.isAvailable());
+                item.isAvailable(),
+                item.getItemRequest() != null
+                        ? item.getItemRequest().getId()
+                        : null);
     }
 
 

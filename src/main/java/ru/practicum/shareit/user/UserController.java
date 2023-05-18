@@ -14,6 +14,7 @@ import java.util.List;
 @Validated
 @RequestMapping(path = "/users")
 public class UserController {
+
     private final UserService userService;
 
     @GetMapping

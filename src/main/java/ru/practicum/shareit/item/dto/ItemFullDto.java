@@ -17,20 +17,27 @@ public class ItemFullDto {
     private String name;
     private String description;
     private Boolean available;
+    private Long requestId;
     private UserShortDto owner;
     private BookingShortDto nextBooking;
     private BookingShortDto lastBooking;
     private List<CommentFullDto> comments;
 
-    public ItemFullDto(String name, String description, Boolean available, UserShortDto owner) {
+    public ItemFullDto(String name, String description, Boolean available, Long requestId, UserShortDto owner) {
         this.name = name;
         this.description = description;
         this.available = available;
+        this.requestId = requestId;
         this.owner = owner;
     }
 
-    public ItemFullDto(Long id, String name, String description, Boolean available, UserShortDto owner) {
-        this(name, description, available, owner);
+    public ItemFullDto(Long id,
+                       String name,
+                       String description,
+                       Boolean available,
+                       Long requestId,
+                       UserShortDto owner) {
+        this(name, description, available, requestId, owner);
         this.id = id;
     }
 }

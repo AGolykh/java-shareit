@@ -13,6 +13,7 @@ import ru.practicum.shareit.comment.dto.CommentInputDto;
 import ru.practicum.shareit.comment.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.*;
 
+import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
@@ -32,6 +33,7 @@ class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final UserService userService;
+    private final ItemRequestService itemRequestService;
 
 
     @Override
@@ -72,6 +74,11 @@ class ItemServiceImpl implements ItemService {
         User user = userService.getUserById(userId);
         Item item = new Item();
         item.setOwner(user);
+
+        if(itemInputDto.getRequestId() != null) {
+            item.setItemRequest(itemRequestService.getRequestById(itemInputDto.getRequestId()));
+        }
+
         ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(itemInputDto, item)))
                 .map(ItemMapper::mapToFullDto)
                 .orElseThrow();

@@ -125,7 +125,7 @@ public class BookingServiceImpl implements BookingService {
         }
         BookingFullDto result = bookingRepository.findById(bookingId)
                 .map(BookingMapper::mapToFullDto)
-                .orElseThrow(() -> new NullPointerException(String.format("Booking %d is not found.", bookingId)));
+                .orElseThrow();
         log.info("Booking {} is found.", result.getId());
         return result;
     }

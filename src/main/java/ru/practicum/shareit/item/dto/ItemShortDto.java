@@ -11,15 +11,17 @@ public class ItemShortDto {
     private String name;
     private String description;
     private Boolean available;
+    private Long requestId;
 
-    public ItemShortDto(String name, String description, Boolean available) {
+    public ItemShortDto(String name, String description, Boolean available, Long requestId) {
         this.name = name;
         this.description = description;
         this.available = available;
+        this.requestId = requestId;
     }
 
-    public ItemShortDto(Long id, String name, String description, Boolean available) {
-        this(name, description, available);
+    public ItemShortDto(Long id, String name, String description, Boolean available, Long requestId) {
+        this(name, description, available, requestId);
         this.id = id;
     }
 }
