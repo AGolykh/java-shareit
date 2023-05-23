@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ItemInputDto {
 
-    private Long itemId;
+    private Long id;
 
     @NotNull
     @NotBlank

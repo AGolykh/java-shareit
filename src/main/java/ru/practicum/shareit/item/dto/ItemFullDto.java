@@ -3,7 +3,7 @@ package ru.practicum.shareit.item.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
-import ru.practicum.shareit.comment.dto.CommentFullDto;
+import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.user.dto.UserShortDto;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class ItemFullDto {
     private UserShortDto owner;
     private BookingShortDto nextBooking;
     private BookingShortDto lastBooking;
-    private List<CommentFullDto> comments;
+    private List<CommentDto> comments;
 
     public ItemFullDto(String name, String description, Boolean available, Long requestId, UserShortDto owner) {
         this.name = name;

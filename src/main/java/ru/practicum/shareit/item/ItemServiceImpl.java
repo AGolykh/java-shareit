@@ -8,7 +8,7 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.comment.Comment;
 import ru.practicum.shareit.comment.CommentRepository;
-import ru.practicum.shareit.comment.dto.CommentFullDto;
+import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.dto.CommentInputDto;
 import ru.practicum.shareit.comment.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.*;
@@ -32,9 +32,9 @@ class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+
     private final UserService userService;
     private final ItemRequestService itemRequestService;
-
 
     @Override
     public List<ItemFullDto> search(String text) {
@@ -108,7 +108,7 @@ class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentFullDto addComment(Long userId, Long itemId, CommentInputDto commentInputDto) {
+    public CommentDto addComment(Long userId, Long itemId, CommentInputDto commentInputDto) {
         User author = userService.getUserById(userId);
         Item item = getItemById(itemId);
 
@@ -121,12 +121,12 @@ class ItemServiceImpl implements ItemService {
         comment.setItem(item);
         comment.setAuthor(author);
 
-        CommentFullDto commentFullDto =
+        CommentDto commentDto =
                 Optional.of(commentRepository.save(CommentMapper.mapToComment(commentInputDto, comment)))
-                        .map(CommentMapper::mapToFullDto)
+                        .map(CommentMapper::mapToDto)
                         .orElseThrow();
-        log.info("Comment {} added to item {}.", commentFullDto.getId(), item.getId());
-        return commentFullDto;
+        log.info("Comment {} added to item {}.", commentDto.getId(), item.getId());
+        return commentDto;
     }
 
     public ItemFullDto addData(Long userId, Item item) {
@@ -150,7 +150,7 @@ class ItemServiceImpl implements ItemService {
 
         result.setComments(commentRepository.findAllByItemId(result.getId())
                 .stream()
-                .map(CommentMapper::mapToFullDto)
+                .map(CommentMapper::mapToDto)
                 .collect(Collectors.toList()));
 
         return result;

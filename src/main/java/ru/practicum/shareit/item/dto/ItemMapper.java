@@ -28,6 +28,9 @@ public class ItemMapper {
 
 
     public static Item mapToItem(ItemInputDto itemInputDto, Item item) {
+        if (itemInputDto.getId() != null) {
+            item.setId(itemInputDto.getId());
+        }
 
         if (itemInputDto.getName() != null) {
             item.setName(itemInputDto.getName());

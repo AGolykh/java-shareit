@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class CommentFullDto {
+public class CommentDto {
 
     private Long id;
 

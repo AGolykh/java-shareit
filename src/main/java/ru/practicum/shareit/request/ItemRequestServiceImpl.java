@@ -24,9 +24,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
 
-    private final UserService userService;
-    private final ItemRepository itemRepository;
     private final ItemRequestRepository itemRequestRepository;
+    private final ItemRepository itemRepository;
+
+    private final UserService userService;
 
     @Override
     public List<ItemRequestDto> getByRequesterId(Long requesterId) {
