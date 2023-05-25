@@ -8,9 +8,9 @@ import java.util.List;
 
 public interface ItemService {
 
-    List<ItemFullDto> search(String text);
+    List<ItemFullDto> search(String text, Integer from, Integer size);
 
-    List<ItemFullDto> getByUserId(Long userId);
+    List<ItemFullDto> getByUserId(Long userId, Integer from, Integer size);
 
     ItemFullDto getById(Long userId, Long itemId);
 

@@ -2,6 +2,9 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -37,13 +40,14 @@ class ItemServiceImpl implements ItemService {
     private final ItemRequestService itemRequestService;
 
     @Override
-    public List<ItemFullDto> search(String text) {
+    public List<ItemFullDto> search(String text, Integer from, Integer size) {
         if (text.length() == 0) {
             log.debug("Search by empty text.");
             return Collections.emptyList();
         }
+        Pageable pageable = getPage(from, size);
         List<ItemFullDto> result = itemRepository
-                .search(text).stream()
+                .search(text, pageable).stream()
                 .map(ItemMapper::mapToFullDto)
                 .collect(Collectors.toList());
         log.info("Found {} item(s).", result.size());
@@ -51,8 +55,9 @@ class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemFullDto> getByUserId(Long userId) {
-        List<ItemFullDto> result = itemRepository.findAllByOwnerId(userId).stream()
+    public List<ItemFullDto> getByUserId(Long userId, Integer from, Integer size) {
+        Pageable pageable = getPage(from, size);
+        List<ItemFullDto> result = itemRepository.findAllByOwnerId(userId, pageable).stream()
                 .map(item -> addData(userId, item))
                 .collect(Collectors.toList());
         log.info("Found {} item(s).", result.size());
@@ -154,5 +159,12 @@ class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList()));
 
         return result;
+    }
+
+    private PageRequest getPage(Integer from, Integer size) {
+        if (size <= 0 || from < 0) {
+            throw new IllegalArgumentException("Page size must not be less than one.");
+        }
+        return PageRequest.of(from / size, size, Sort.by("id").ascending());
     }
 }

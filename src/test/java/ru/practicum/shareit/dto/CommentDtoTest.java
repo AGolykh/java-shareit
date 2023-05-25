@@ -48,7 +48,7 @@ public class CommentDtoTest {
 
         Comment comment = new Comment();
         comment.setId(1L);
-        comment.setText("Ну такое себе, обычная кулкпалка в пупке");
+        comment.setText("Ну такое себе, обычная колупалка в пупке");
         comment.setCreated(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         comment.setItem(item);
         comment.setAuthor(author);
@@ -68,7 +68,7 @@ public class CommentDtoTest {
 
     @Test
     void commentInputDtoDeserializationTest() throws IOException {
-        CommentInputDto commentInputDto = new CommentInputDto("Ну такое себе, обычная кулкпалка в пупке");
+        CommentInputDto commentInputDto = new CommentInputDto("Ну такое себе, обычная колупалка в пупке");
 
         JsonContent<CommentInputDto> commentInputDtoJsonContent = commentInputDtoJacksonTester
                 .write(commentInputDto);
