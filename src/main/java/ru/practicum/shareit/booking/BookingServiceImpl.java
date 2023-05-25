@@ -43,7 +43,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAllByBookerIdAndStateCurrent(booker.getId(), pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.findAllByBookerIdAndStatePast( booker.getId(), pageable);
+                bookings = bookingRepository.findAllByBookerIdAndStatePast(booker.getId(), pageable);
                 break;
             case FUTURE:
                 bookings = bookingRepository.findAllByBookerIdAndStateFuture(booker.getId(), pageable);
