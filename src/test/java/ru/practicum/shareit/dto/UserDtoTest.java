@@ -67,8 +67,8 @@ class UserDtoTest {
         UserInputDto userInputDto = new UserInputDto(2L, "Dmitriy", "dm@yandex.ru");
 
         JsonContent<UserInputDto> userInputDtoJsonContent = userInputDtoJacksonTester.write(userInputDto);
-        User newUser = UserMapper.
-                mapToUser(userInputDtoJacksonTester.parseObject(userInputDtoJsonContent.getJson()), new User());
+        User newUser = UserMapper
+                .mapToUser(userInputDtoJacksonTester.parseObject(userInputDtoJsonContent.getJson()), new User());
 
         assertThat(newUser).hasFieldOrPropertyWithValue("id", userInputDto.getId());
         assertThat(newUser).hasFieldOrPropertyWithValue("name", userInputDto.getName());

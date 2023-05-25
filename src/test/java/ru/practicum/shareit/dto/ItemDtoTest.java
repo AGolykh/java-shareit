@@ -117,8 +117,8 @@ public class ItemDtoTest {
                 new ItemInputDto(2L, "Палка", "Просто палка", true, 6L);
 
         JsonContent<ItemInputDto> itemInputDtoJsonContent = itemInputDtoJacksonTester.write(itemInputDto);
-        Item newItem = ItemMapper.
-                mapToItem(itemInputDtoJacksonTester.parseObject(itemInputDtoJsonContent.getJson()), new Item());
+        Item newItem = ItemMapper.mapToItem(itemInputDtoJacksonTester.parseObject(
+                itemInputDtoJsonContent.getJson()), new Item());
 
         assertThat(newItem).hasFieldOrPropertyWithValue("id", itemInputDto.getId());
         assertThat(newItem).hasFieldOrPropertyWithValue("name", itemInputDto.getName());

@@ -137,13 +137,15 @@ class BookingDtoTest {
 
     @Test
     void bookingInputDtoDeserializationTest() throws IOException {
-        BookingInputDto bookingInputDto = new BookingInputDto(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
+        BookingInputDto bookingInputDto = new BookingInputDto(
+                LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS),
                 LocalDateTime.now().plusHours(1).truncatedTo(ChronoUnit.SECONDS),
                 2L);
 
         JsonContent<BookingInputDto> userInputDtoJsonContent = bookingInputDtoJacksonTester.write(bookingInputDto);
-        Booking newBooking = BookingMapper.
-                mapToBooking(bookingInputDtoJacksonTester.parseObject(userInputDtoJsonContent.getJson()),
+        Booking newBooking = BookingMapper
+                .mapToBooking(bookingInputDtoJacksonTester.parseObject(
+                                userInputDtoJsonContent.getJson()),
                         new Booking());
 
         assertThat(newBooking).hasFieldOrPropertyWithValue("start", bookingInputDto.getStart());

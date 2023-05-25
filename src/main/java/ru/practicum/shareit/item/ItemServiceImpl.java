@@ -75,7 +75,7 @@ class ItemServiceImpl implements ItemService {
         Item item = new Item();
         item.setOwner(user);
 
-        if(itemInputDto.getRequestId() != null) {
+        if (itemInputDto.getRequestId() != null) {
             item.setItemRequest(itemRequestService.getRequestById(itemInputDto.getRequestId()));
         }
 

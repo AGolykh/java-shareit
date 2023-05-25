@@ -37,28 +37,22 @@ public class BookingServiceImpl implements BookingService {
         Pageable pageable = getPage(from, size);
         switch (state) {
             case ALL:
-                bookings = bookingRepository.
-                        findAllByBookerId(booker.getId(), pageable);
+                bookings = bookingRepository.findAllByBookerId(booker.getId(), pageable);
                 break;
             case CURRENT:
-                bookings = bookingRepository.
-                        findAllByBookerIdAndStateCurrent(booker.getId(), pageable);
+                bookings = bookingRepository.findAllByBookerIdAndStateCurrent(booker.getId(), pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.
-                        findAllByBookerIdAndStatePast( booker.getId(), pageable);
+                bookings = bookingRepository.findAllByBookerIdAndStatePast( booker.getId(), pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository.
-                        findAllByBookerIdAndStateFuture(booker.getId(), pageable);
+                bookings = bookingRepository.findAllByBookerIdAndStateFuture(booker.getId(), pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository.
-                        findAllByBookerIdAndStatus(booker.getId(), Status.WAITING, pageable);
+                bookings = bookingRepository.findAllByBookerIdAndStatus(booker.getId(), Status.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingRepository
-                        .findAllByBookerIdAndStatus(booker.getId(), Status.REJECTED, pageable);
+                bookings = bookingRepository.findAllByBookerIdAndStatus(booker.getId(), Status.REJECTED, pageable);
                 break;
         }
 
@@ -79,28 +73,22 @@ public class BookingServiceImpl implements BookingService {
         Pageable pageable = getPage(from, size);
         switch (state) {
             case ALL:
-                bookings = bookingRepository
-                        .findAllByOwnerId(owner.getId(), pageable);
+                bookings = bookingRepository.findAllByOwnerId(owner.getId(), pageable);
                 break;
             case CURRENT:
-                bookings = bookingRepository
-                        .findAllByOwnerIdAndStateCurrent(owner.getId(), pageable);
+                bookings = bookingRepository.findAllByOwnerIdAndStateCurrent(owner.getId(), pageable);
                 break;
             case PAST:
-                bookings = bookingRepository
-                        .findAllByOwnerIdAndStatePast(owner.getId(), pageable);
+                bookings = bookingRepository.findAllByOwnerIdAndStatePast(owner.getId(), pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository
-                        .findAllByOwnerIdAndStateFuture(owner.getId(), pageable);
+                bookings = bookingRepository.findAllByOwnerIdAndStateFuture(owner.getId(), pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository
-                        .findAllByOwnerIdAndStatus(owner.getId(), Status.WAITING, pageable);
+                bookings = bookingRepository.findAllByOwnerIdAndStatus(owner.getId(), Status.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingRepository
-                        .findAllByOwnerIdAndStatus(owner.getId(), Status.REJECTED, pageable);
+                bookings = bookingRepository.findAllByOwnerIdAndStatus(owner.getId(), Status.REJECTED, pageable);
                 break;
         }
 
