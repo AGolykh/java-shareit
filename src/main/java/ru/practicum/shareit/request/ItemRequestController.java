@@ -17,10 +17,8 @@ public class ItemRequestController {
 
     @GetMapping
     public List<ItemRequestDto> getByRequesterId(
-            @RequestHeader("X-Sharer-User-Id") Long requesterId,
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size) {
-        return itemRequestService.getByRequesterId(requesterId, from, size);
+            @RequestHeader("X-Sharer-User-Id") Long requesterId) {
+        return itemRequestService.getByRequesterId(requesterId);
     }
 
 

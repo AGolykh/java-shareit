@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ItemRequestService {
 
-    List<ItemRequestDto> getByRequesterId(Long requesterId, Integer from, Integer size);
+    List<ItemRequestDto> getByRequesterId(Long requesterId);
 
     List<ItemRequestDto> getAll(Long requesterId, Integer from, Integer size);
 
