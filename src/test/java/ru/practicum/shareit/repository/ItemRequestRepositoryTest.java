@@ -59,7 +59,7 @@ class ItemRequestRepositoryTest {
         item.setItemRequest(itemRequestFromDb);
         itemFromDb = itemRepository.save(item);
 
-        pageable = PageRequest.of(1/20, 20, Sort.by("id").descending());
+        pageable = PageRequest.of(1 / 20, 20, Sort.by("id").descending());
     }
 
     @Test
