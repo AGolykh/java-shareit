@@ -22,20 +22,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
-
     @InjectMocks
     private UserServiceImpl userService;
 
-    User user1;
-    User user2;
-    UserFullDto userFullDto1;
-    UserFullDto userFullDto2;
-    UserInputDto userInputDto1;
-    UserInputDto userInputDto2;
+    private User user1;
+    private User user2;
+    private UserFullDto userFullDto1;
+    private UserFullDto userFullDto2;
+    private UserInputDto userInputDto1;
 
     @BeforeEach
     void beforeEach() {
@@ -45,7 +43,6 @@ class UserServiceTest {
 
         user2 = new User(2L, "sadsadsa", "dsasdadsds@ddsadssads.ru");
         userFullDto2 = UserMapper.mapToFullDto(user2);
-        userInputDto2 = new UserInputDto(user2.getId(), user2.getName(), user2.getEmail());
     }
 
     @Test
@@ -57,7 +54,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getById_returnUsers1_add2Users() {
+    void getById_returnUser1_add2Users() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
 
         assertThat(userService.getById(1L)).isEqualTo(userFullDto1);
@@ -69,14 +66,14 @@ class UserServiceTest {
     }
 
     @Test
-    void create_returnUsers_addUsers() {
+    void create_returnUser_addUser() {
         when(userRepository.save(user1)).thenReturn(user1);
 
         assertThat(userService.create(userInputDto1)).isEqualTo(userFullDto1);
     }
 
     @Test
-    void update_returnUsers_updateUsers() {
+    void update_returnUser_updateUser() {
         when(userRepository.save(user1)).thenReturn(user1);
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
 
@@ -84,26 +81,26 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteById_void_addUsers() {
+    void deleteById_void_addUser() {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
         userService.deleteById(user1.getId());
         verify(userRepository).deleteById(user1.getId());
     }
 
     @Test
-    void deleteById_throwNullPointerException_emptyUsers() {
+    void deleteById_throwNullPointerException_emptyUser() {
         assertThrows(NullPointerException.class, () -> userService.deleteById(999L));
     }
 
     @Test
-    void getUserById_returnUsers_addUsers() {
+    void getUserById_returnUser_addUser() {
         when(userRepository.findById(user1.getId())).thenReturn(Optional.of(user1));
 
         assertThat(userService.getUserById(user1.getId())).isEqualTo(user1);
     }
 
     @Test
-    void getUserById_throwNullPointerException_emptyUsers() {
+    void getUserById_throwNullPointerException_emptyUser() {
         assertThrows(NullPointerException.class, () -> userService.getById(999L));
     }
 }

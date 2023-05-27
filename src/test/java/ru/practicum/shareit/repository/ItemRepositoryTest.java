@@ -33,10 +33,10 @@ class ItemRepositoryTest {
     @Autowired
     private ItemRequestRepository itemRequestRepository;
 
-    User userFromDb;
-    Item itemFromDb;
-    ItemRequest itemRequestFromDb;
-    Pageable pageable;
+    private User userFromDb;
+    private Item itemFromDb;
+    private ItemRequest itemRequestFromDb;
+    private Pageable pageable;
 
     @BeforeEach
     public void beforeEach() {

@@ -24,10 +24,8 @@ public class ItemDtoTest {
 
     @Autowired
     private JacksonTester<ItemFullDto> itemFullDtoJacksonTester;
-
     @Autowired
     private JacksonTester<ItemShortDto> itemShortDtoJacksonTester;
-
     @Autowired
     private JacksonTester<ItemInputDto> itemInputDtoJacksonTester;
 

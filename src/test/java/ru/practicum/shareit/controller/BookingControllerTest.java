@@ -32,17 +32,14 @@ public class BookingControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @MockBean
     private BookingService bookingServiceMock;
 
-    BookingInputDto bookingInputDto1;
-    BookingInputDto bookingInputDto2;
-    BookingFullDto bookingFullDto1;
-    BookingFullDto bookingFullDto2;
+    private BookingInputDto bookingInputDto1;
+    private BookingFullDto bookingFullDto1;
+    private BookingFullDto bookingFullDto2;
 
     @BeforeEach
     void beforeEach() {
@@ -57,9 +54,8 @@ public class BookingControllerTest {
                 new UserShortDto(3L, "wqewqew"),
                 Status.APPROVED);
 
-        bookingInputDto2 =
-                new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
-                        LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
+        BookingInputDto bookingInputDto2 = new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
+                LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
 
         bookingFullDto2 = new BookingFullDto(1L,
                 bookingInputDto2.getStart(),

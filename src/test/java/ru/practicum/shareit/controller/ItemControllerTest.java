@@ -36,23 +36,16 @@ public class ItemControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @MockBean
     private ItemService itemServiceMock;
 
-    Item item1;
-    Item item2;
-    ItemInputDto itemInputDto1;
-    ItemInputDto itemInputDto2;
-    UserShortDto userShortDto1;
-    UserShortDto userShortDto2;
-    ItemFullDto itemFullDto1;
-    ItemFullDto itemFullDto2;
-    CommentDto commentDto;
-    CommentInputDto commentInputDto;
+    private ItemInputDto itemInputDto1;
+    private ItemFullDto itemFullDto1;
+    private ItemFullDto itemFullDto2;
+    private CommentDto commentDto;
+    private CommentInputDto commentInputDto;
 
     @BeforeEach
     void beforeEach() {
@@ -61,27 +54,27 @@ public class ItemControllerTest {
         itemInputDto1.setName("fdsadsa");
         itemInputDto1.setDescription("132132sadsadsa");
         itemInputDto1.setAvailable(true);
-        item1 = new Item(1L, "wqewq", "dsadsa", true,
+        Item item1 = new Item(1L, "wqewq", "dsadsa", true,
                 new User(1L, "fdsfds", "fdesfds"),
                 new ItemRequest(1L, "wqewqew",
                         new User(2L, "ewqewq", "21321sadsa"),
                         LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)));
-        userShortDto1 = new UserShortDto(1L, "");
+        UserShortDto userShortDto1 = new UserShortDto(1L, "");
         itemFullDto1 = new ItemFullDto();
         itemFullDto1.setOwner(userShortDto1);
         itemFullDto1 = ItemMapper.mapToFullDto(ItemMapper.mapToItem(itemInputDto1, item1));
 
-        itemInputDto2 = new ItemInputDto();
+        ItemInputDto itemInputDto2 = new ItemInputDto();
         itemInputDto2.setId(2L);
         itemInputDto2.setName("fdsadsa");
         itemInputDto2.setDescription("132132sadsadsa");
         itemInputDto2.setAvailable(true);
-        item2 = new Item(2L, "wqewq", "dsadsa", true,
+        Item item2 = new Item(2L, "wqewq", "dsadsa", true,
                 new User(1L, "fdsfds", "fdesfds"),
                 new ItemRequest(2L, "wqewqew",
                         new User(2L, "ewqewq", "21321sadsa@sdsa.ru"),
                         LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)));
-        userShortDto2 = new UserShortDto(1L, "");
+        UserShortDto userShortDto2 = new UserShortDto(1L, "");
         itemFullDto2 = new ItemFullDto();
         itemFullDto2.setOwner(userShortDto2);
         itemFullDto2 = ItemMapper.mapToFullDto(ItemMapper.mapToItem(itemInputDto1, item2));

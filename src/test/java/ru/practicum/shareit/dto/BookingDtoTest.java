@@ -25,10 +25,8 @@ class BookingDtoTest {
 
     @Autowired
     private JacksonTester<BookingFullDto> bookingFullDtoJacksonTester;
-
     @Autowired
     private JacksonTester<BookingShortDto> bookingShortDtoJacksonTester;
-
     @Autowired
     private JacksonTester<BookingInputDto> bookingInputDtoJacksonTester;
 

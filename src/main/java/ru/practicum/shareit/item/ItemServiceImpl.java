@@ -6,21 +6,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.comment.Comment;
 import ru.practicum.shareit.comment.CommentRepository;
 import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.dto.CommentInputDto;
 import ru.practicum.shareit.comment.dto.CommentMapper;
-import ru.practicum.shareit.item.dto.*;
-
+import ru.practicum.shareit.item.dto.ItemFullDto;
+import ru.practicum.shareit.item.dto.ItemInputDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+public
 class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
@@ -56,9 +59,10 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemFullDto> getByUserId(Long userId, Integer from, Integer size) {
+        User user = userService.getUserById(userId);
         Pageable pageable = getPage(from, size);
-        List<ItemFullDto> result = itemRepository.findAllByOwnerId(userId, pageable).stream()
-                .map(item -> addData(userId, item))
+        List<ItemFullDto> result = itemRepository.findAllByOwnerId(user.getId(), pageable).stream()
+                .map(item -> addData(user.getId(), item))
                 .collect(Collectors.toList());
         log.info("Found {} item(s).", result.size());
         return result;
@@ -118,7 +122,8 @@ class ItemServiceImpl implements ItemService {
         Item item = getItemById(itemId);
 
         if (!bookingRepository
-                .existsByBookerIdAndItemIdAndEndBefore(author.getId(), item.getId(), LocalDateTime.now())) {
+                .existsByBookerIdAndItemIdAndEndBefore(author.getId(), item.getId(),
+                        LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))) {
             throw new NoSuchElementException("The user has not booked this item.");
         }
 

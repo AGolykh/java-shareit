@@ -33,17 +33,17 @@ class BookingRepositoryTest {
     @Autowired
     private BookingRepository bookingRepository;
 
-    User userFromDb1;
-    User userFromDb2;
-    Item itemFromDb1;
-    Item itemFromDb2;
-    Booking bookingFromDb;
-    Booking nextFromDb;
-    Booking lastFromDb;
-    Booking waitingFromDb;
-    Booking rejectedFromDb;
+    private User userFromDb1;
+    private User userFromDb2;
+    private Item itemFromDb1;
+    private Item itemFromDb2;
+    private Booking bookingFromDb;
+    private Booking nextFromDb;
+    private Booking lastFromDb;
+    private Booking waitingFromDb;
+    private Booking rejectedFromDb;
 
-    Pageable pageable;
+    private Pageable pageable;
 
     @BeforeEach
     public void beforeEach() {

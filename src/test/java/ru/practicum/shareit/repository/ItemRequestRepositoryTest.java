@@ -8,8 +8,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
@@ -26,17 +24,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ItemRequestRepositoryTest {
 
     @Autowired
-    private ItemRepository itemRepository;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
     private ItemRequestRepository itemRequestRepository;
 
-    User userFromDb;
-    Item itemFromDb;
-    ItemRequest itemRequestFromDb;
+    private User userFromDb;
+    private ItemRequest itemRequestFromDb;
 
-    Pageable pageable;
+    private Pageable pageable;
 
     @BeforeEach
     public void beforeEach() {
@@ -50,14 +45,6 @@ class ItemRequestRepositoryTest {
         itemRequest.setRequester(user);
         itemRequest.setCreated(LocalDateTime.now().minusDays(1).truncatedTo(ChronoUnit.SECONDS));
         itemRequestFromDb = itemRequestRepository.save(itemRequest);
-
-        Item item = new Item();
-        item.setName("Кирпич");
-        item.setDescription("Шлакоблокунь");
-        item.setAvailable(true);
-        item.setOwner(userFromDb);
-        item.setItemRequest(itemRequestFromDb);
-        itemFromDb = itemRepository.save(item);
 
         pageable = PageRequest.of(1 / 20, 20, Sort.by("id").descending());
     }

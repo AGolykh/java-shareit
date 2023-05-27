@@ -22,10 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureTestDatabase
 class CommentRepositoryTest {
 
-    User userFromDb;
-    Item itemFromDb;
-    Comment commentFromDb;
-
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
@@ -33,12 +29,15 @@ class CommentRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    private Item itemFromDb;
+    private Comment commentFromDb;
+
     @BeforeEach
     public void beforeEach() {
         User user = new User();
         user.setName("vityok");
         user.setEmail("vityok@mail.com");
-        userFromDb = userRepository.save(user);
+        User userFromDb = userRepository.save(user);
 
         Item item = new Item();
         item.setName("Кирпич");

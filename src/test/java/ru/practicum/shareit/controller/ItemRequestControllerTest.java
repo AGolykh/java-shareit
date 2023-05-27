@@ -31,16 +31,14 @@ public class ItemRequestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @MockBean
     private ItemRequestService itemRequestServiceMock;
 
-    ItemRequestDto itemRequestDto1;
-    ItemRequestDto itemRequestDto2;
-    ItemRequestInputDto itemRequestInputDto1;
+    private ItemRequestDto itemRequestDto1;
+    private ItemRequestDto itemRequestDto2;
+    private ItemRequestInputDto itemRequestInputDto1;
 
     @BeforeEach
     void beforeEach() {

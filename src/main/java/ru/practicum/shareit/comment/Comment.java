@@ -1,5 +1,6 @@
 package ru.practicum.shareit.comment;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @RequiredArgsConstructor
 @Entity
+@AllArgsConstructor
 @EqualsAndHashCode
 @Table(name = "COMMENTS", schema = "PUBLIC")
 public class Comment {

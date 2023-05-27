@@ -22,7 +22,6 @@ public class ItemRequestDtoTest {
 
     @Autowired
     private JacksonTester<ItemRequestDto> itemRequestDtoJacksonTester;
-
     @Autowired
     private JacksonTester<ItemRequestInputDto> itemRequestInputDtoJacksonTester;
 
@@ -47,7 +46,8 @@ public class ItemRequestDtoTest {
         assertThat(itemRequestDtoJsonContent)
                 .extractingJsonPathStringValue("$.description").isEqualTo(itemRequest.getDescription());
         assertThat(itemRequestDtoJsonContent)
-                .extractingJsonPathStringValue("$.created").isEqualTo(itemRequest.getCreated().toString());
+                .extractingJsonPathStringValue("$.created").isEqualTo(itemRequest.getCreated()
+                        .truncatedTo(ChronoUnit.SECONDS).toString());
     }
 
     @Test

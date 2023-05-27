@@ -23,7 +23,6 @@ public class CommentDtoTest {
 
     @Autowired
     private JacksonTester<CommentDto> commentDtoJacksonTester;
-
     @Autowired
     private JacksonTester<CommentInputDto> commentInputDtoJacksonTester;
 

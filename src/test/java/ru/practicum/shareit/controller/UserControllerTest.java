@@ -28,15 +28,13 @@ public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @MockBean
     private UserService userServiceMock;
 
-    UserInputDto userInputDto1;
-    UserInputDto userInputDto2;
+    private UserInputDto userInputDto1;
+    private UserInputDto userInputDto2;
 
     @BeforeEach
     void beforeEach() {

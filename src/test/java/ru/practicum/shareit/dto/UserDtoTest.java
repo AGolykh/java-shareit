@@ -20,10 +20,8 @@ class UserDtoTest {
 
     @Autowired
     private JacksonTester<UserFullDto> userFullDtoJacksonTester;
-
     @Autowired
     private JacksonTester<UserShortDto> userShortDtoJacksonTester;
-
     @Autowired
     private JacksonTester<UserInputDto> userInputDtoJacksonTester;
 
