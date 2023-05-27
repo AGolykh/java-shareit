@@ -2,6 +2,7 @@ package ru.practicum.shareit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,9 +23,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,147 +39,122 @@ public class BookingControllerTest {
     @MockBean
     private BookingService bookingServiceMock;
 
-    @SneakyThrows
-    @Test
-    void create_returnBooking_addBooking() {
-        BookingInputDto bookingInputDto =
+    BookingInputDto bookingInputDto1;
+    BookingInputDto bookingInputDto2;
+    BookingFullDto bookingFullDto1;
+    BookingFullDto bookingFullDto2;
+
+    @BeforeEach
+    void beforeEach() {
+        bookingInputDto1 =
                 new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
                         LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
 
-        BookingFullDto bookingFullDto = new BookingFullDto(1L,
-                bookingInputDto.getStart(),
-                bookingInputDto.getEnd(),
-                new ItemShortDto(1L, "dswadsa", "wqewq", true, 2L),
-                new UserShortDto(3L, "wqewqew"),
-                Status.APPROVED);
-
-        when(bookingServiceMock.create(1L, bookingInputDto)).thenReturn(bookingFullDto);
-
-        mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(bookingInputDto))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(bookingFullDto.getId()))
-                .andExpect(jsonPath("$.start").value(bookingFullDto.getStart()
-                        .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$.end").value(bookingFullDto.getEnd()
-                        .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$.status").value(bookingFullDto.getStatus().toString()))
-
-                .andExpect(jsonPath("$.item.id").value(bookingFullDto.getItem().getId()))
-                .andExpect(jsonPath("$.item.name").value(bookingFullDto.getItem().getName()))
-                .andExpect(jsonPath("$.item.description").value(bookingFullDto.getItem().getDescription()))
-                .andExpect(jsonPath("$.item.available").value(bookingFullDto.getItem().getAvailable()))
-                .andExpect(jsonPath("$.item.requestId").value(bookingFullDto.getItem().getRequestId()))
-
-                .andExpect(jsonPath("$.booker.id").value(bookingFullDto.getBooker().getId()))
-                .andExpect(jsonPath("$.booker.name").value(bookingFullDto.getBooker().getName()));
-        verify(bookingServiceMock).create(1L, bookingInputDto);
-    }
-
-    @SneakyThrows
-    @Test
-    void approve_returnBooking_addBooking() {
-        BookingInputDto bookingInputDto =
-                new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
-                        LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
-
-        BookingFullDto bookingFullDto = new BookingFullDto(1L,
-                bookingInputDto.getStart(),
-                bookingInputDto.getEnd(),
-                new ItemShortDto(1L, "dswadsa", "wqewq", true, 2L),
-                new UserShortDto(3L, "wqewqew"),
-                Status.APPROVED);
-
-        when(bookingServiceMock.approve(1L, 1L, true)).thenReturn(bookingFullDto);
-
-        mockMvc.perform(patch("/bookings/{bookingId}", 1L)
-                        .header("X-Sharer-User-Id", 1L)
-                        .param("approved", "true")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(bookingFullDto.getId()))
-                .andExpect(jsonPath("$.start").value(bookingFullDto.getStart()
-                        .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$.end").value(bookingFullDto.getEnd()
-                        .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$.status").value(bookingFullDto.getStatus().toString()))
-
-                .andExpect(jsonPath("$.item.id").value(bookingFullDto.getItem().getId()))
-                .andExpect(jsonPath("$.item.name").value(bookingFullDto.getItem().getName()))
-                .andExpect(jsonPath("$.item.description").value(bookingFullDto.getItem().getDescription()))
-                .andExpect(jsonPath("$.item.available").value(bookingFullDto.getItem().getAvailable()))
-                .andExpect(jsonPath("$.item.requestId").value(bookingFullDto.getItem().getRequestId()))
-
-                .andExpect(jsonPath("$.booker.id").value(bookingFullDto.getBooker().getId()))
-                .andExpect(jsonPath("$.booker.name").value(bookingFullDto.getBooker().getName()));
-        verify(bookingServiceMock).approve(1L, 1L, true);
-    }
-
-    @SneakyThrows
-    @Test
-    void getById_returnBooking_addBooking() {
-        BookingInputDto bookingInputDto =
-                new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
-                        LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
-
-        BookingFullDto bookingFullDto = new BookingFullDto(1L,
-                bookingInputDto.getStart(),
-                bookingInputDto.getEnd(),
-                new ItemShortDto(1L, "dswadsa", "wqewq", true, 2L),
-                new UserShortDto(3L, "wqewqew"),
-                Status.APPROVED);
-
-        when(bookingServiceMock.getById(1L, 1L)).thenReturn(bookingFullDto);
-
-        mockMvc.perform(get("/bookings/{bookingId}", 1L)
-                        .header("X-Sharer-User-Id", 1L)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(bookingFullDto.getId()))
-                .andExpect(jsonPath("$.start").value(bookingFullDto.getStart()
-                        .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$.end").value(bookingFullDto.getEnd()
-                        .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$.status").value(bookingFullDto.getStatus().toString()))
-
-                .andExpect(jsonPath("$.item.id").value(bookingFullDto.getItem().getId()))
-                .andExpect(jsonPath("$.item.name").value(bookingFullDto.getItem().getName()))
-                .andExpect(jsonPath("$.item.description").value(bookingFullDto.getItem().getDescription()))
-                .andExpect(jsonPath("$.item.available").value(bookingFullDto.getItem().getAvailable()))
-                .andExpect(jsonPath("$.item.requestId").value(bookingFullDto.getItem().getRequestId()))
-
-                .andExpect(jsonPath("$.booker.id").value(bookingFullDto.getBooker().getId()))
-                .andExpect(jsonPath("$.booker.name").value(bookingFullDto.getBooker().getName()));
-        verify(bookingServiceMock).getById(1L, 1L);
-    }
-
-    @SneakyThrows
-    @Test
-    void getByBookerId_return2Booking_add2Booking() {
-        BookingInputDto bookingInputDto1 =
-                new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
-                        LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
-
-        BookingFullDto bookingFullDto1 = new BookingFullDto(1L,
+        bookingFullDto1 = new BookingFullDto(1L,
                 bookingInputDto1.getStart(),
                 bookingInputDto1.getEnd(),
                 new ItemShortDto(1L, "dswadsa", "wqewq", true, 2L),
                 new UserShortDto(3L, "wqewqew"),
                 Status.APPROVED);
 
-        BookingInputDto bookingInputDto2 =
+        bookingInputDto2 =
                 new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
                         LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
 
-        BookingFullDto bookingFullDto2 = new BookingFullDto(1L,
+        bookingFullDto2 = new BookingFullDto(1L,
                 bookingInputDto2.getStart(),
                 bookingInputDto2.getEnd(),
                 new ItemShortDto(1L, "dswadsa", "wqewq", true, 2L),
                 new UserShortDto(3L, "wqewqew"),
                 Status.APPROVED);
+    }
 
+    @SneakyThrows
+    @Test
+    void create_returnBooking_addBooking() {
+        when(bookingServiceMock.create(1L, bookingInputDto1)).thenReturn(bookingFullDto1);
+
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(objectMapper.writeValueAsString(bookingInputDto1))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(bookingFullDto1.getId()))
+                .andExpect(jsonPath("$.start").value(bookingFullDto1.getStart()
+                        .truncatedTo(ChronoUnit.SECONDS).toString()))
+                .andExpect(jsonPath("$.end").value(bookingFullDto1.getEnd()
+                        .truncatedTo(ChronoUnit.SECONDS).toString()))
+                .andExpect(jsonPath("$.status").value(bookingFullDto1.getStatus().toString()))
+
+                .andExpect(jsonPath("$.item.id").value(bookingFullDto1.getItem().getId()))
+                .andExpect(jsonPath("$.item.name").value(bookingFullDto1.getItem().getName()))
+                .andExpect(jsonPath("$.item.description").value(bookingFullDto1.getItem().getDescription()))
+                .andExpect(jsonPath("$.item.available").value(bookingFullDto1.getItem().getAvailable()))
+                .andExpect(jsonPath("$.item.requestId").value(bookingFullDto1.getItem().getRequestId()))
+
+                .andExpect(jsonPath("$.booker.id").value(bookingFullDto1.getBooker().getId()))
+                .andExpect(jsonPath("$.booker.name").value(bookingFullDto1.getBooker().getName()));
+        verify(bookingServiceMock).create(1L, bookingInputDto1);
+    }
+
+    @SneakyThrows
+    @Test
+    void approve_returnBooking_addBooking() {
+        when(bookingServiceMock.approve(1L, 1L, true)).thenReturn(bookingFullDto1);
+
+        mockMvc.perform(patch("/bookings/{bookingId}", 1L)
+                        .header("X-Sharer-User-Id", 1L)
+                        .param("approved", "true")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(bookingFullDto1.getId()))
+                .andExpect(jsonPath("$.start").value(bookingFullDto1.getStart()
+                        .truncatedTo(ChronoUnit.SECONDS).toString()))
+                .andExpect(jsonPath("$.end").value(bookingFullDto1.getEnd()
+                        .truncatedTo(ChronoUnit.SECONDS).toString()))
+                .andExpect(jsonPath("$.status").value(bookingFullDto1.getStatus().toString()))
+
+                .andExpect(jsonPath("$.item.id").value(bookingFullDto1.getItem().getId()))
+                .andExpect(jsonPath("$.item.name").value(bookingFullDto1.getItem().getName()))
+                .andExpect(jsonPath("$.item.description").value(bookingFullDto1.getItem().getDescription()))
+                .andExpect(jsonPath("$.item.available").value(bookingFullDto1.getItem().getAvailable()))
+                .andExpect(jsonPath("$.item.requestId").value(bookingFullDto1.getItem().getRequestId()))
+
+                .andExpect(jsonPath("$.booker.id").value(bookingFullDto1.getBooker().getId()))
+                .andExpect(jsonPath("$.booker.name").value(bookingFullDto1.getBooker().getName()));
+        verify(bookingServiceMock).approve(1L, 1L, true);
+    }
+
+    @SneakyThrows
+    @Test
+    void getById_returnBooking_addBooking() {
+        when(bookingServiceMock.getById(1L, 1L)).thenReturn(bookingFullDto1);
+
+        mockMvc.perform(get("/bookings/{bookingId}", 1L)
+                        .header("X-Sharer-User-Id", 1L)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(bookingFullDto1.getId()))
+                .andExpect(jsonPath("$.start").value(bookingFullDto1.getStart()
+                        .truncatedTo(ChronoUnit.SECONDS).toString()))
+                .andExpect(jsonPath("$.end").value(bookingFullDto1.getEnd()
+                        .truncatedTo(ChronoUnit.SECONDS).toString()))
+                .andExpect(jsonPath("$.status").value(bookingFullDto1.getStatus().toString()))
+
+                .andExpect(jsonPath("$.item.id").value(bookingFullDto1.getItem().getId()))
+                .andExpect(jsonPath("$.item.name").value(bookingFullDto1.getItem().getName()))
+                .andExpect(jsonPath("$.item.description").value(bookingFullDto1.getItem().getDescription()))
+                .andExpect(jsonPath("$.item.available").value(bookingFullDto1.getItem().getAvailable()))
+                .andExpect(jsonPath("$.item.requestId").value(bookingFullDto1.getItem().getRequestId()))
+
+                .andExpect(jsonPath("$.booker.id").value(bookingFullDto1.getBooker().getId()))
+                .andExpect(jsonPath("$.booker.name").value(bookingFullDto1.getBooker().getName()));
+        verify(bookingServiceMock).getById(1L, 1L);
+    }
+
+    @SneakyThrows
+    @Test
+    void getByBookerId_return2Booking_add2Booking() {
         when(bookingServiceMock.getByBookerId(1L, "ALL", 1, 20))
                 .thenReturn(List.of(bookingFullDto1, bookingFullDto2));
 
@@ -229,28 +203,6 @@ public class BookingControllerTest {
     @SneakyThrows
     @Test
     void getByOwnerId_return2Booking_add2Booking() {
-        BookingInputDto bookingInputDto1 =
-                new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
-                        LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
-
-        BookingFullDto bookingFullDto1 = new BookingFullDto(1L,
-                bookingInputDto1.getStart(),
-                bookingInputDto1.getEnd(),
-                new ItemShortDto(1L, "dswadsa", "wqewq", true, 2L),
-                new UserShortDto(3L, "wqewqew"),
-                Status.APPROVED);
-
-        BookingInputDto bookingInputDto2 =
-                new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
-                        LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
-
-        BookingFullDto bookingFullDto2 = new BookingFullDto(1L,
-                bookingInputDto2.getStart(),
-                bookingInputDto2.getEnd(),
-                new ItemShortDto(1L, "dswadsa", "wqewq", true, 2L),
-                new UserShortDto(3L, "wqewqew"),
-                Status.APPROVED);
-
         when(bookingServiceMock.getByOwnerId(1L, "ALL", 1, 20))
                 .thenReturn(List.of(bookingFullDto1, bookingFullDto2));
 

@@ -2,6 +2,7 @@ package ru.practicum.shareit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -42,153 +43,118 @@ public class ItemControllerTest {
     @MockBean
     private ItemService itemServiceMock;
 
-    @SneakyThrows
-    @Test
-    void create_returnItem_addItem() {
-        ItemInputDto itemInputDto = new ItemInputDto();
-        itemInputDto.setId(1L);
-        itemInputDto.setName("fdsadsa");
-        itemInputDto.setDescription("132132sadsadsa");
-        itemInputDto.setAvailable(true);
+    Item item1;
+    Item item2;
+    ItemInputDto itemInputDto1;
+    ItemInputDto itemInputDto2;
+    UserShortDto userShortDto1;
+    UserShortDto userShortDto2;
+    ItemFullDto itemFullDto1;
+    ItemFullDto itemFullDto2;
+    CommentDto commentDto;
+    CommentInputDto commentInputDto;
 
-        Item item = new Item(1L, "wqewq", "dsadsa", true,
+    @BeforeEach
+    void beforeEach() {
+        itemInputDto1 = new ItemInputDto();
+        itemInputDto1.setId(1L);
+        itemInputDto1.setName("fdsadsa");
+        itemInputDto1.setDescription("132132sadsadsa");
+        itemInputDto1.setAvailable(true);
+        item1 = new Item(1L, "wqewq", "dsadsa", true,
                 new User(1L, "fdsfds", "fdesfds"),
                 new ItemRequest(1L, "wqewqew",
                         new User(2L, "ewqewq", "21321sadsa"),
                         LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)));
+        userShortDto1 = new UserShortDto(1L, "");
+        itemFullDto1 = new ItemFullDto();
+        itemFullDto1.setOwner(userShortDto1);
+        itemFullDto1 = ItemMapper.mapToFullDto(ItemMapper.mapToItem(itemInputDto1, item1));
 
-        ItemFullDto itemFullDto = ItemMapper.mapToFullDto(ItemMapper.mapToItem(itemInputDto, item));
+        itemInputDto2 = new ItemInputDto();
+        itemInputDto2.setId(2L);
+        itemInputDto2.setName("fdsadsa");
+        itemInputDto2.setDescription("132132sadsadsa");
+        itemInputDto2.setAvailable(true);
+        item2 = new Item(2L, "wqewq", "dsadsa", true,
+                new User(1L, "fdsfds", "fdesfds"),
+                new ItemRequest(2L, "wqewqew",
+                        new User(2L, "ewqewq", "21321sadsa@sdsa.ru"),
+                        LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)));
+        userShortDto2 = new UserShortDto(1L, "");
+        itemFullDto2 = new ItemFullDto();
+        itemFullDto2.setOwner(userShortDto2);
+        itemFullDto2 = ItemMapper.mapToFullDto(ItemMapper.mapToItem(itemInputDto1, item2));
 
-        UserShortDto userShortDto = new UserShortDto(1L, "");
-        itemFullDto.setOwner(userShortDto);
+        commentDto = new CommentDto(1L,
+                "sadsadsa",
+                "dfsadsa",
+                LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        commentInputDto = new CommentInputDto(commentDto.getText());
+    }
 
-        when(itemServiceMock.create(1L, itemInputDto)).thenReturn(itemFullDto);
+    @SneakyThrows
+    @Test
+    void create_returnItem_addItem() {
+        when(itemServiceMock.create(1L, itemInputDto1)).thenReturn(itemFullDto1);
 
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(itemInputDto))
+                        .content(objectMapper.writeValueAsString(itemInputDto1))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(itemFullDto.getId()))
-                .andExpect(jsonPath("$.name").value(itemFullDto.getName()))
-                .andExpect(jsonPath("$.description").value(itemFullDto.getDescription()))
-                .andExpect(jsonPath("$.available").value(itemFullDto.getAvailable()))
-                .andExpect(jsonPath("$.owner.id").value(itemFullDto.getOwner().getId()))
-                .andExpect(jsonPath("$.owner.name").value(itemFullDto.getOwner().getName()))
-                .andExpect(jsonPath("$.requestId").value(itemFullDto.getRequestId()));
-        verify(itemServiceMock).create(1L, itemInputDto);
+                .andExpect(jsonPath("$.id").value(itemFullDto1.getId()))
+                .andExpect(jsonPath("$.name").value(itemFullDto1.getName()))
+                .andExpect(jsonPath("$.description").value(itemFullDto1.getDescription()))
+                .andExpect(jsonPath("$.available").value(itemFullDto1.getAvailable()))
+                .andExpect(jsonPath("$.owner.id").value(itemFullDto1.getOwner().getId()))
+                .andExpect(jsonPath("$.owner.name").value(itemFullDto1.getOwner().getName()))
+                .andExpect(jsonPath("$.requestId").value(itemFullDto1.getRequestId()));
+        verify(itemServiceMock).create(1L, itemInputDto1);
     }
 
     @SneakyThrows
     @Test
     void get_returnItem_addItem() {
-        ItemInputDto itemInputDto = new ItemInputDto();
-        itemInputDto.setId(1L);
-        itemInputDto.setName("fdsadsa");
-        itemInputDto.setDescription("132132sadsadsa");
-        itemInputDto.setAvailable(true);
-
-        Item item = new Item(1L, "wqewq", "dsadsa", true,
-                new User(1L, "fdsfds", "fdesfds"),
-                new ItemRequest(1L, "wqewqew",
-                        new User(2L, "ewqewq", "21321sadsa"),
-                        LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)));
-
-        ItemFullDto itemFullDto = ItemMapper.mapToFullDto(ItemMapper.mapToItem(itemInputDto, item));
-
-        UserShortDto userShortDto = new UserShortDto(1L, "");
-        itemFullDto.setOwner(userShortDto);
-
-        when(itemServiceMock.getById(1L, 1L)).thenReturn(itemFullDto);
+        when(itemServiceMock.getById(1L, 1L)).thenReturn(itemFullDto1);
 
         mockMvc.perform(get("/items/{itemId}", 1L)
                         .header("X-Sharer-User-Id", 1L)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(itemFullDto.getId()))
-                .andExpect(jsonPath("$.name").value(itemFullDto.getName()))
-                .andExpect(jsonPath("$.description").value(itemFullDto.getDescription()))
-                .andExpect(jsonPath("$.available").value(itemFullDto.getAvailable()))
-                .andExpect(jsonPath("$.owner.id").value(itemFullDto.getOwner().getId()))
-                .andExpect(jsonPath("$.owner.name").value(itemFullDto.getOwner().getName()))
-                .andExpect(jsonPath("$.requestId").value(itemFullDto.getRequestId()));
+                .andExpect(jsonPath("$.id").value(itemFullDto1.getId()))
+                .andExpect(jsonPath("$.name").value(itemFullDto1.getName()))
+                .andExpect(jsonPath("$.description").value(itemFullDto1.getDescription()))
+                .andExpect(jsonPath("$.available").value(itemFullDto1.getAvailable()))
+                .andExpect(jsonPath("$.owner.id").value(itemFullDto1.getOwner().getId()))
+                .andExpect(jsonPath("$.owner.name").value(itemFullDto1.getOwner().getName()))
+                .andExpect(jsonPath("$.requestId").value(itemFullDto1.getRequestId()));
         verify(itemServiceMock).getById(1L, 1L);
     }
 
     @SneakyThrows
     @Test
     void update_returnItem_addItem() {
-        ItemInputDto itemInputDto = new ItemInputDto();
-        itemInputDto.setId(1L);
-        itemInputDto.setName("fdsadsa");
-        itemInputDto.setDescription("132132sadsadsa");
-        itemInputDto.setAvailable(true);
-
-        Item item = new Item(1L, "wqewq", "dsadsa", true,
-                new User(1L, "fdsfds", "fdesfds"),
-                new ItemRequest(1L, "wqewqew",
-                        new User(2L, "ewqewq", "21321sadsa"),
-                        LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)));
-
-        ItemFullDto itemFullDto = ItemMapper.mapToFullDto(ItemMapper.mapToItem(itemInputDto, item));
-
-        UserShortDto userShortDto = new UserShortDto(1L, "");
-        itemFullDto.setOwner(userShortDto);
-
-        when(itemServiceMock.update(1L, 1L, itemInputDto)).thenReturn(itemFullDto);
+        when(itemServiceMock.update(1L, 1L, itemInputDto1)).thenReturn(itemFullDto1);
 
         mockMvc.perform(patch("/items/{itemId}", 1L)
                         .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(itemInputDto))
+                        .content(objectMapper.writeValueAsString(itemInputDto1))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(itemFullDto.getId()))
-                .andExpect(jsonPath("$.name").value(itemFullDto.getName()))
-                .andExpect(jsonPath("$.description").value(itemFullDto.getDescription()))
-                .andExpect(jsonPath("$.available").value(itemFullDto.getAvailable()))
-                .andExpect(jsonPath("$.owner.id").value(itemFullDto.getOwner().getId()))
-                .andExpect(jsonPath("$.owner.name").value(itemFullDto.getOwner().getName()))
-                .andExpect(jsonPath("$.requestId").value(itemFullDto.getRequestId()));
-        verify(itemServiceMock).update(1L, 1L, itemInputDto);
+                .andExpect(jsonPath("$.id").value(itemFullDto1.getId()))
+                .andExpect(jsonPath("$.name").value(itemFullDto1.getName()))
+                .andExpect(jsonPath("$.description").value(itemFullDto1.getDescription()))
+                .andExpect(jsonPath("$.available").value(itemFullDto1.getAvailable()))
+                .andExpect(jsonPath("$.owner.id").value(itemFullDto1.getOwner().getId()))
+                .andExpect(jsonPath("$.owner.name").value(itemFullDto1.getOwner().getName()))
+                .andExpect(jsonPath("$.requestId").value(itemFullDto1.getRequestId()));
+        verify(itemServiceMock).update(1L, 1L, itemInputDto1);
     }
 
     @SneakyThrows
     @Test
     void getByUserId_return2ItemByUser1_add2Item() {
-        ItemInputDto itemInputDto1 = new ItemInputDto();
-        itemInputDto1.setId(1L);
-        itemInputDto1.setName("fdsadsa");
-        itemInputDto1.setDescription("132132sadsadsa");
-        itemInputDto1.setAvailable(true);
-
-        Item item1 = new Item(1L, "wqewq", "dsadsa", true,
-                new User(1L, "fdsfds", "fdesfds"),
-                new ItemRequest(1L, "wqewqew",
-                        new User(2L, "ewqwqewewq", "21321sadsa@wqewq.ru"),
-                        LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)));
-
-        ItemFullDto itemFullDto1 = ItemMapper.mapToFullDto(ItemMapper.mapToItem(itemInputDto1, item1));
-
-        UserShortDto userShortDto1 = new UserShortDto(1L, "");
-        itemFullDto1.setOwner(userShortDto1);
-
-        ItemInputDto itemInputDto2 = new ItemInputDto();
-        itemInputDto2.setId(2L);
-        itemInputDto2.setName("fdsadsa");
-        itemInputDto2.setDescription("132132sadsadsa");
-        itemInputDto2.setAvailable(true);
-
-        Item item2 = new Item(2L, "wqewq", "dsadsa", true,
-                new User(1L, "fdsfds", "fdesfds"),
-                new ItemRequest(2L, "wqewqew",
-                        new User(2L, "ewqewq", "21321sadsa@sdsa.ru"),
-                        LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)));
-
-        ItemFullDto itemFullDto2 = ItemMapper.mapToFullDto(ItemMapper.mapToItem(itemInputDto1, item2));
-
-        UserShortDto userShortDto2 = new UserShortDto(1L, "");
-        itemFullDto2.setOwner(userShortDto2);
-
         when(itemServiceMock.getByUserId(1L, 1, 20))
                 .thenReturn(List.of(itemFullDto1, itemFullDto2));
 
@@ -218,24 +184,7 @@ public class ItemControllerTest {
     @SneakyThrows
     @Test
     void search_returnItem_addItem() {
-        ItemInputDto itemInputDto = new ItemInputDto();
-        itemInputDto.setId(1L);
-        itemInputDto.setName("fdsadsa");
-        itemInputDto.setDescription("132132sadsadsa");
-        itemInputDto.setAvailable(true);
-
-        Item item = new Item(1L, "wqewq", "dsadsa", true,
-                new User(1L, "fdsfds", "fdesfds"),
-                new ItemRequest(1L, "wqewqew",
-                        new User(2L, "ewqewq", "21321sadsa"),
-                        LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)));
-
-        ItemFullDto itemFullDto = ItemMapper.mapToFullDto(ItemMapper.mapToItem(itemInputDto, item));
-
-        UserShortDto userShortDto = new UserShortDto(1L, "");
-        itemFullDto.setOwner(userShortDto);
-
-        when(itemServiceMock.search("fdsadsa", 1, 20)).thenReturn(List.of(itemFullDto));
+        when(itemServiceMock.search("fdsadsa", 1, 20)).thenReturn(List.of(itemFullDto1));
 
         mockMvc.perform(get("/items/search")
                         .param("text", "fdsadsa")
@@ -243,25 +192,19 @@ public class ItemControllerTest {
                         .param("size", "20")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(itemFullDto.getId()))
-                .andExpect(jsonPath("$[0].name").value(itemFullDto.getName()))
-                .andExpect(jsonPath("$[0].description").value(itemFullDto.getDescription()))
-                .andExpect(jsonPath("$[0].available").value(itemFullDto.getAvailable()))
-                .andExpect(jsonPath("$[0].owner.id").value(itemFullDto.getOwner().getId()))
-                .andExpect(jsonPath("$[0].owner.name").value(itemFullDto.getOwner().getName()))
-                .andExpect(jsonPath("$[0].requestId").value(itemFullDto.getRequestId()));
+                .andExpect(jsonPath("$[0].id").value(itemFullDto1.getId()))
+                .andExpect(jsonPath("$[0].name").value(itemFullDto1.getName()))
+                .andExpect(jsonPath("$[0].description").value(itemFullDto1.getDescription()))
+                .andExpect(jsonPath("$[0].available").value(itemFullDto1.getAvailable()))
+                .andExpect(jsonPath("$[0].owner.id").value(itemFullDto1.getOwner().getId()))
+                .andExpect(jsonPath("$[0].owner.name").value(itemFullDto1.getOwner().getName()))
+                .andExpect(jsonPath("$[0].requestId").value(itemFullDto1.getRequestId()));
         verify(itemServiceMock).search("fdsadsa", 1, 20);
     }
 
     @SneakyThrows
     @Test
     void addComment_returnComment_addComment() {
-        CommentDto commentDto = new CommentDto(1L,
-                "sadsadsa",
-                "dfsadsa",
-                LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-
-        CommentInputDto commentInputDto = new CommentInputDto(commentDto.getText());
         when(itemServiceMock.addComment(1L, 1L, commentInputDto)).thenReturn(commentDto);
 
         mockMvc.perform(post("/items/{itemId}/comment", 1L)

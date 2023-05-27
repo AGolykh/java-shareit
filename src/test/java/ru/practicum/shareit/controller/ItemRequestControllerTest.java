@@ -2,6 +2,7 @@ package ru.practicum.shareit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,21 +38,30 @@ public class ItemRequestControllerTest {
     @MockBean
     private ItemRequestService itemRequestServiceMock;
 
-    @SneakyThrows
-    @Test
-    void getByRequesterId_return2ItemRequest_add2ItemRequest() {
-        ItemRequestDto itemRequestDto1 = new ItemRequestDto();
+    ItemRequestDto itemRequestDto1;
+    ItemRequestDto itemRequestDto2;
+    ItemRequestInputDto itemRequestInputDto1;
+
+    @BeforeEach
+    void beforeEach() {
+        itemRequestDto1 = new ItemRequestDto();
         itemRequestDto1.setId(1L);
         itemRequestDto1.setRequester(new UserShortDto(1L, "wqewqewq"));
         itemRequestDto1.setDescription("wqewqewq");
         itemRequestDto1.setCreated(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
-        ItemRequestDto itemRequestDto2 = new ItemRequestDto();
+        itemRequestDto2 = new ItemRequestDto();
         itemRequestDto2.setId(2L);
         itemRequestDto2.setRequester(new UserShortDto(1L, "wqewqewq"));
         itemRequestDto2.setDescription("wqewqwewrewewq");
         itemRequestDto2.setCreated(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
+        itemRequestInputDto1 = new ItemRequestInputDto(itemRequestDto1.getDescription());
+    }
+
+    @SneakyThrows
+    @Test
+    void getByRequesterId_return2ItemRequest_add2ItemRequest() {
         when(itemRequestServiceMock.getByRequesterId(1L))
                 .thenReturn(List.of(itemRequestDto1, itemRequestDto2));
 
@@ -78,18 +88,6 @@ public class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     void getAll_return2ItemRequest_add2ItemRequest() {
-        ItemRequestDto itemRequestDto1 = new ItemRequestDto();
-        itemRequestDto1.setId(1L);
-        itemRequestDto1.setRequester(new UserShortDto(1L, "wqewqewq"));
-        itemRequestDto1.setDescription("wqewqewq");
-        itemRequestDto1.setCreated(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-
-        ItemRequestDto itemRequestDto2 = new ItemRequestDto();
-        itemRequestDto2.setId(2L);
-        itemRequestDto2.setRequester(new UserShortDto(1L, "wqewqewq"));
-        itemRequestDto2.setDescription("wqewqwewrewewq");
-        itemRequestDto2.setCreated(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-
         when(itemRequestServiceMock.getAll(1L, 1, 20))
                 .thenReturn(List.of(itemRequestDto1, itemRequestDto2));
 
@@ -117,12 +115,6 @@ public class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     void getById_returnItemRequest_addItemRequest() {
-        ItemRequestDto itemRequestDto1 = new ItemRequestDto();
-        itemRequestDto1.setId(1L);
-        itemRequestDto1.setRequester(new UserShortDto(1L, "wqewqewq"));
-        itemRequestDto1.setDescription("wqewqewq");
-        itemRequestDto1.setCreated(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-
         when(itemRequestServiceMock.getById(1L, 1L))
                 .thenReturn(itemRequestDto1);
 
@@ -142,28 +134,20 @@ public class ItemRequestControllerTest {
     @SneakyThrows
     @Test
     void create_returnItemRequest_addItemRequest() {
-        ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1L);
-        itemRequestDto.setRequester(new UserShortDto(1L, "wqewqewq"));
-        itemRequestDto.setDescription("wqewqewq");
-        itemRequestDto.setCreated(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-
-        ItemRequestInputDto itemRequestInputDto = new ItemRequestInputDto(itemRequestDto.getDescription());
-
-        when(itemRequestServiceMock.create(1L, itemRequestInputDto))
-                .thenReturn(itemRequestDto);
+        when(itemRequestServiceMock.create(1L, itemRequestInputDto1))
+                .thenReturn(itemRequestDto1);
 
         mockMvc.perform(post("/requests")
                         .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(itemRequestInputDto))
+                        .content(objectMapper.writeValueAsString(itemRequestInputDto1))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(itemRequestDto.getId()))
-                .andExpect(jsonPath("$.description").value(itemRequestDto.getDescription()))
-                .andExpect(jsonPath("$.created").value(itemRequestDto.getCreated()
+                .andExpect(jsonPath("$.id").value(itemRequestDto1.getId()))
+                .andExpect(jsonPath("$.description").value(itemRequestDto1.getDescription()))
+                .andExpect(jsonPath("$.created").value(itemRequestDto1.getCreated()
                         .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$.requester.id").value(itemRequestDto.getRequester().getId()))
-                .andExpect(jsonPath("$.requester.name").value(itemRequestDto.getRequester().getName()));
-        verify(itemRequestServiceMock).create(1L, itemRequestInputDto);
+                .andExpect(jsonPath("$.requester.id").value(itemRequestDto1.getRequester().getId()))
+                .andExpect(jsonPath("$.requester.name").value(itemRequestDto1.getRequester().getName()));
+        verify(itemRequestServiceMock).create(1L, itemRequestInputDto1);
     }
 }
