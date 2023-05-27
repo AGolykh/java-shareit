@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 
 @Data
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
 @EqualsAndHashCode
 @Table(name = "ITEMS", schema = "PUBLIC")

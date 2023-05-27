@@ -37,7 +37,6 @@ public class ItemRequestControllerTest {
     @MockBean
     private ItemRequestService itemRequestServiceMock;
 
-
     @SneakyThrows
     @Test
     void getByRequesterId_return2ItemRequest_add2ItemRequest() {
@@ -62,19 +61,18 @@ public class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemRequestDto1.getId()))
                 .andExpect(jsonPath("$[0].description").value(itemRequestDto1.getDescription()))
-                .andExpect(jsonPath("$[0].created").value((itemRequestDto1.getCreated())
+                .andExpect(jsonPath("$[0].created").value(itemRequestDto1.getCreated()
                         .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$[0].requester.id").value((itemRequestDto1.getRequester().getId())))
-                .andExpect(jsonPath("$[0].requester.name").value((itemRequestDto1.getRequester().getName())))
+                .andExpect(jsonPath("$[0].requester.id").value(itemRequestDto1.getRequester().getId()))
+                .andExpect(jsonPath("$[0].requester.name").value(itemRequestDto1.getRequester().getName()))
                 .andExpect(jsonPath("$[1].id").value(itemRequestDto2.getId()))
                 .andExpect(jsonPath("$[1].description").value(itemRequestDto2.getDescription()))
-                .andExpect(jsonPath("$[1].created").value((itemRequestDto2.getCreated())
+                .andExpect(jsonPath("$[1].created").value(itemRequestDto2.getCreated()
                         .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$[1].requester.id").value((itemRequestDto2.getRequester().getId())))
-                .andExpect(jsonPath("$[1].requester.name").value((itemRequestDto2.getRequester().getName())));
+                .andExpect(jsonPath("$[1].requester.id").value(itemRequestDto2.getRequester().getId()))
+                .andExpect(jsonPath("$[1].requester.name").value(itemRequestDto2.getRequester().getName()));
         verify(itemRequestServiceMock).getByRequesterId(1L);
     }
-
 
 
     @SneakyThrows
@@ -103,16 +101,16 @@ public class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemRequestDto1.getId()))
                 .andExpect(jsonPath("$[0].description").value(itemRequestDto1.getDescription()))
-                .andExpect(jsonPath("$[0].created").value((itemRequestDto1.getCreated())
+                .andExpect(jsonPath("$[0].created").value(itemRequestDto1.getCreated()
                         .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$[0].requester.id").value((itemRequestDto1.getRequester().getId())))
-                .andExpect(jsonPath("$[0].requester.name").value((itemRequestDto1.getRequester().getName())))
+                .andExpect(jsonPath("$[0].requester.id").value(itemRequestDto1.getRequester().getId()))
+                .andExpect(jsonPath("$[0].requester.name").value(itemRequestDto1.getRequester().getName()))
                 .andExpect(jsonPath("$[1].id").value(itemRequestDto2.getId()))
                 .andExpect(jsonPath("$[1].description").value(itemRequestDto2.getDescription()))
-                .andExpect(jsonPath("$[1].created").value((itemRequestDto2.getCreated())
+                .andExpect(jsonPath("$[1].created").value(itemRequestDto2.getCreated()
                         .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$[1].requester.id").value((itemRequestDto2.getRequester().getId())))
-                .andExpect(jsonPath("$[1].requester.name").value((itemRequestDto2.getRequester().getName())));
+                .andExpect(jsonPath("$[1].requester.id").value(itemRequestDto2.getRequester().getId()))
+                .andExpect(jsonPath("$[1].requester.name").value(itemRequestDto2.getRequester().getName()));
         verify(itemRequestServiceMock).getAll(1L, 1, 20);
     }
 
@@ -134,10 +132,10 @@ public class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(itemRequestDto1.getId()))
                 .andExpect(jsonPath("$.description").value(itemRequestDto1.getDescription()))
-                .andExpect(jsonPath("$.created").value((itemRequestDto1.getCreated())
+                .andExpect(jsonPath("$.created").value(itemRequestDto1.getCreated()
                         .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$.requester.id").value((itemRequestDto1.getRequester().getId())))
-                .andExpect(jsonPath("$.requester.name").value((itemRequestDto1.getRequester().getName())));
+                .andExpect(jsonPath("$.requester.id").value(itemRequestDto1.getRequester().getId()))
+                .andExpect(jsonPath("$.requester.name").value(itemRequestDto1.getRequester().getName()));
         verify(itemRequestServiceMock).getById(1L, 1L);
     }
 
@@ -162,10 +160,10 @@ public class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(itemRequestDto.getId()))
                 .andExpect(jsonPath("$.description").value(itemRequestDto.getDescription()))
-                .andExpect(jsonPath("$.created").value((itemRequestDto.getCreated())
+                .andExpect(jsonPath("$.created").value(itemRequestDto.getCreated()
                         .truncatedTo(ChronoUnit.SECONDS).toString()))
-                .andExpect(jsonPath("$.requester.id").value((itemRequestDto.getRequester().getId())))
-                .andExpect(jsonPath("$.requester.name").value((itemRequestDto.getRequester().getName())));
+                .andExpect(jsonPath("$.requester.id").value(itemRequestDto.getRequester().getId()))
+                .andExpect(jsonPath("$.requester.name").value(itemRequestDto.getRequester().getName()));
         verify(itemRequestServiceMock).create(1L, itemRequestInputDto);
     }
 }

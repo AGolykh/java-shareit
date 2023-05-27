@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.user.User;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "REQUESTS", schema = "PUBLIC")
 public class ItemRequest {

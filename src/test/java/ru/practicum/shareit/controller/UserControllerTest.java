@@ -18,10 +18,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -60,10 +57,10 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(userInputDto1.getId()))
                 .andExpect(jsonPath("$[0].email").value(userInputDto1.getEmail()))
-                .andExpect(jsonPath("$[0].name").value((userInputDto1.getName())))
+                .andExpect(jsonPath("$[0].name").value(userInputDto1.getName()))
                 .andExpect(jsonPath("$[1].id").value(userInputDto2.getId()))
                 .andExpect(jsonPath("$[1].email").value(userInputDto2.getEmail()))
-                .andExpect(jsonPath("$[1].name").value((userInputDto2.getName())));
+                .andExpect(jsonPath("$[1].name").value(userInputDto2.getName()));
         verify(userServiceMock).getAll();
     }
 
@@ -81,7 +78,7 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userInputDto.getId()))
                 .andExpect(jsonPath("$.email").value(userInputDto.getEmail()))
-                .andExpect(jsonPath("$.name").value((userInputDto.getName())));
+                .andExpect(jsonPath("$.name").value(userInputDto.getName()));
         verify(userServiceMock).getById(userInputDto.getId());
     }
 
@@ -134,7 +131,7 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userInputDto.getId()))
                 .andExpect(jsonPath("$.name").value(userInputDto.getName()))
-                .andExpect((jsonPath("$.email").value(userInputDto.getEmail())));
+                .andExpect(jsonPath("$.email").value(userInputDto.getEmail()));
         verify(userServiceMock).update(userInputDto, userInputDto.getId());
     }
 
