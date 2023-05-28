@@ -34,9 +34,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingFullDto> getByBookerId(Long bookerId, String subState, Integer from, Integer size) {
         State state = getState(subState);
+        Pageable pageable = getPage(from, size);
         User booker = userService.getUserById(bookerId);
         List<Booking> bookings = new ArrayList<>();
-        Pageable pageable = getPage(from, size);
         switch (state) {
             case ALL:
                 bookings = bookingRepository.findAllByBookerId(booker.getId(), pageable);
@@ -70,9 +70,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingFullDto> getByOwnerId(Long ownerId, String subState, Integer from, Integer size) {
         State state = getState(subState);
+        Pageable pageable = getPage(from, size);
         User owner = userService.getUserById(ownerId);
         List<Booking> bookings = new ArrayList<>();
-        Pageable pageable = getPage(from, size);
         switch (state) {
             case ALL:
                 bookings = bookingRepository.findAllByOwnerId(owner.getId(), pageable);

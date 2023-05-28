@@ -43,8 +43,7 @@ class ItemRequestServiceImplTest {
     private ItemRequestServiceImpl itemRequestService;
 
 
-    User user1;
-    User user2;
+    private User user1;
     private ItemRequest itemRequest1;
     private ItemRequestInputDto itemRequestInputDto1;
     private ItemRequestDto itemRequestDto1;
@@ -55,7 +54,6 @@ class ItemRequestServiceImplTest {
     @BeforeEach
     void beforeEach() {
         user1 = new User(1L, "sadsa", "dsads@dsads.ru");
-        user2 = new User(2L, "sadsadsa", "dsasdadsds@ddsadssads.ru");
         itemRequest1 = new ItemRequest(1L, "dsadsa", user1,
                 LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         item1 = new Item(1L, "sdad", "dswads", true, user1, itemRequest1);

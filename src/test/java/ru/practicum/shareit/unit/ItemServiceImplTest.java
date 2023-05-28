@@ -79,7 +79,6 @@ class ItemServiceImplTest {
                 LocalDateTime.now());
         commentInputDto = new CommentInputDto(comment.getText());
         pageable = PageRequest.of(1 / 20, 20, Sort.by("id").ascending());
-
     }
 
     @Test
