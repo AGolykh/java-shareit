@@ -40,7 +40,6 @@ class UserServiceImplTest {
         user1 = new User(1L, "sadsa", "dsads@dsads.ru");
         userFullDto1 = UserMapper.mapToFullDto(user1);
         userInputDto1 = new UserInputDto(user1.getId(), user1.getName(), user1.getEmail());
-
         user2 = new User(2L, "sadsadsa", "dsasdadsds@ddsadssads.ru");
         userFullDto2 = UserMapper.mapToFullDto(user2);
     }
