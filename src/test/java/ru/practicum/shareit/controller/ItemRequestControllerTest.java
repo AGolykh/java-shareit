@@ -70,13 +70,13 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$[0].id").value(itemRequestDto1.getId()))
                 .andExpect(jsonPath("$[0].description").value(itemRequestDto1.getDescription()))
                 .andExpect(jsonPath("$[0].created").value(itemRequestDto1.getCreated()
-                        .truncatedTo(ChronoUnit.SECONDS).toString()))
+                        .toString()))
                 .andExpect(jsonPath("$[0].requester.id").value(itemRequestDto1.getRequester().getId()))
                 .andExpect(jsonPath("$[0].requester.name").value(itemRequestDto1.getRequester().getName()))
                 .andExpect(jsonPath("$[1].id").value(itemRequestDto2.getId()))
                 .andExpect(jsonPath("$[1].description").value(itemRequestDto2.getDescription()))
                 .andExpect(jsonPath("$[1].created").value(itemRequestDto2.getCreated()
-                        .truncatedTo(ChronoUnit.SECONDS).toString()))
+                        .toString()))
                 .andExpect(jsonPath("$[1].requester.id").value(itemRequestDto2.getRequester().getId()))
                 .andExpect(jsonPath("$[1].requester.name").value(itemRequestDto2.getRequester().getName()));
         verify(itemRequestServiceMock).getByRequesterId(1L);
