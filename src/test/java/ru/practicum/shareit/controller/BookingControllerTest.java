@@ -67,7 +67,7 @@ public class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    void create_returnBooking_addBooking() {
+    void create_returnBooking_addedBooking() {
         when(bookingServiceMock.create(1L, bookingInputDto1)).thenReturn(bookingFullDto1);
 
         mockMvc.perform(post("/bookings")
@@ -95,7 +95,7 @@ public class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    void approve_returnBooking_addBooking() {
+    void approve_returnBooking_addedBooking() {
         when(bookingServiceMock.approve(1L, 1L, true)).thenReturn(bookingFullDto1);
 
         mockMvc.perform(patch("/bookings/{bookingId}", 1L)
@@ -123,7 +123,7 @@ public class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    void getById_returnBooking_addBooking() {
+    void getById_returnBooking_addedBooking() {
         when(bookingServiceMock.getById(1L, 1L)).thenReturn(bookingFullDto1);
 
         mockMvc.perform(get("/bookings/{bookingId}", 1L)
@@ -150,7 +150,7 @@ public class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    void getByBookerId_return2Booking_add2Booking() {
+    void getByBookerId_return2Booking_added2Booking() {
         when(bookingServiceMock.getByBookerId(1L, "ALL", 1, 20))
                 .thenReturn(List.of(bookingFullDto1, bookingFullDto2));
 
@@ -198,7 +198,7 @@ public class BookingControllerTest {
 
     @SneakyThrows
     @Test
-    void getByOwnerId_return2Booking_add2Booking() {
+    void getByOwnerId_return2Booking_added2Booking() {
         when(bookingServiceMock.getByOwnerId(1L, "ALL", 1, 20))
                 .thenReturn(List.of(bookingFullDto1, bookingFullDto2));
 

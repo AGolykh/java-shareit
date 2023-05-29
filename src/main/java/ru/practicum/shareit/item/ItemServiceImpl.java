@@ -51,7 +51,7 @@ class ItemServiceImpl implements ItemService {
         Pageable pageable = getPage(from, size);
         List<ItemFullDto> result = itemRepository
                 .search(text, pageable).stream()
-                .map(ItemMapper::mapToFullDto)
+                .map(item -> addData(-1L, item))
                 .collect(Collectors.toList());
         log.info("Found {} item(s).", result.size());
         return result;
@@ -81,15 +81,15 @@ class ItemServiceImpl implements ItemService {
     @Override
     public ItemFullDto create(Long userId, ItemInputDto itemInputDto) {
         User user = userService.getUserById(userId);
-        Item item = new Item();
-        item.setOwner(user);
+        Item newItem = new Item();
+        newItem.setOwner(user);
 
         if (itemInputDto.getRequestId() != null) {
-            item.setItemRequest(itemRequestService.getRequestById(itemInputDto.getRequestId()));
+            newItem.setItemRequest(itemRequestService.getRequestById(itemInputDto.getRequestId()));
         }
 
-        ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(itemInputDto, item)))
-                .map(ItemMapper::mapToFullDto)
+        ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(itemInputDto, newItem)))
+                .map(item -> addData(userId, item))
                 .orElseThrow();
         log.info("Item {} {} created.", result.getId(), result.getName());
         return result;
@@ -104,7 +104,7 @@ class ItemServiceImpl implements ItemService {
             throw new IllegalArgumentException("Only the owner can edit an item");
         }
         ItemFullDto result = Optional.of(itemRepository.save(ItemMapper.mapToItem(itemInputDto, oldItem)))
-                .map(ItemMapper::mapToFullDto)
+                .map(item -> addData(userId, item))
                 .orElseThrow();
         log.info("Item {} {} updated.", result.getId(), result.getName());
         return result;

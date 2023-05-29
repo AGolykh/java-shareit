@@ -88,7 +88,7 @@ public class ItemControllerTest {
 
     @SneakyThrows
     @Test
-    void create_returnItem_addItem() {
+    void create_returnItem_addedItem() {
         when(itemServiceMock.create(1L, itemInputDto1)).thenReturn(itemFullDto1);
 
         mockMvc.perform(post("/items")
@@ -108,7 +108,7 @@ public class ItemControllerTest {
 
     @SneakyThrows
     @Test
-    void get_returnItem_addItem() {
+    void get_returnItem_addedItem() {
         when(itemServiceMock.getById(1L, 1L)).thenReturn(itemFullDto1);
 
         mockMvc.perform(get("/items/{itemId}", 1L)
@@ -127,7 +127,7 @@ public class ItemControllerTest {
 
     @SneakyThrows
     @Test
-    void update_returnItem_addItem() {
+    void update_returnItem_addedItem() {
         when(itemServiceMock.update(1L, 1L, itemInputDto1)).thenReturn(itemFullDto1);
 
         mockMvc.perform(patch("/items/{itemId}", 1L)
@@ -147,7 +147,7 @@ public class ItemControllerTest {
 
     @SneakyThrows
     @Test
-    void getByUserId_return2ItemByUser1_add2Item() {
+    void getByUserId_return2ItemByUser1_added2Item() {
         when(itemServiceMock.getByUserId(1L, 1, 20))
                 .thenReturn(List.of(itemFullDto1, itemFullDto2));
 

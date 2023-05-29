@@ -79,6 +79,7 @@ class ItemServiceImplTest {
                 LocalDateTime.now());
         commentInputDto = new CommentInputDto(comment.getText());
         pageable = PageRequest.of(1 / 20, 20, Sort.by("id").ascending());
+        itemFullDto1.setComments(new ArrayList<>());
     }
 
     @Test
@@ -103,7 +104,7 @@ class ItemServiceImplTest {
     void getByUserId_return1Item_add2Item() {
         when(userService.getUserById(user1.getId())).thenReturn(user1);
         when(itemRepository.findAllByOwnerId(1L, pageable)).thenReturn(List.of(item1));
-        itemFullDto1.setComments(new ArrayList<>());
+
         assertThat(itemService.getByUserId(1L, 1, 20)).asList().contains(itemFullDto1);
     }
 
