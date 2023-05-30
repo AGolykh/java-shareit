@@ -1,11 +1,10 @@
-package ru.practicum.shareit.integration;
+package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserFullDto;
 import ru.practicum.shareit.user.dto.UserInputDto;
 
@@ -14,9 +13,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
-@SpringBootTest(properties = "spring.datasource.url = jdbc:h2:mem:test")
+@SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class UserServiceIntegrationTest {
+class UserServiceIT {
 
     @Autowired
     private UserService userService;

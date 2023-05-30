@@ -1,4 +1,4 @@
-package ru.practicum.shareit.unit;
+package ru.practicum.shareit.request;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +12,6 @@ import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.request.ItemRequestRepository;
-import ru.practicum.shareit.request.ItemRequestServiceImpl;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestInputDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
@@ -31,7 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ItemRequestServiceImplTest {
+class ItemRequestServiceTest {
 
     @Mock
     private ItemRequestRepository itemRequestRepository;
@@ -67,7 +64,8 @@ class ItemRequestServiceImplTest {
     @Test
     void getByRequesterId_return1ItemRequest_added1ItemRequest() {
         when(userService.getUserById(user1.getId())).thenReturn(user1);
-        when(itemRequestRepository.findAllByRequesterId(user1.getId())).thenReturn(List.of(itemRequest1));
+        when(itemRequestRepository
+                .findAllByRequesterIdOrderByCreatedDesc(user1.getId())).thenReturn(List.of(itemRequest1));
         when(itemRepository.findAllByItemRequestId(itemRequestDto1.getId())).thenReturn(List.of(item1));
 
         assertThat(itemRequestService.getByRequesterId(user1.getId())).asList().contains(itemRequestDto1);
@@ -76,7 +74,8 @@ class ItemRequestServiceImplTest {
     @Test
     void getAll_return1ItemRequest_added1ItemRequest() {
         when(userService.getUserById(user1.getId())).thenReturn(user1);
-        when(itemRequestRepository.findAllByRequesterIdNot(user1.getId(), pageable)).thenReturn(List.of(itemRequest1));
+        when(itemRequestRepository
+                .findAllByRequesterIdNotOrderByCreatedDesc(user1.getId(), pageable)).thenReturn(List.of(itemRequest1));
         when(itemRepository.findAllByItemRequestId(itemRequestDto1.getId())).thenReturn(List.of(item1));
 
         assertThat(itemRequestService.getAll(user1.getId(), 1, 20)).asList().contains(itemRequestDto1);

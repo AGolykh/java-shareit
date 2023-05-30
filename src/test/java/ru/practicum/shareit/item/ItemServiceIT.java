@@ -1,4 +1,4 @@
-package ru.practicum.shareit.integration;
+package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemFullDto;
 import ru.practicum.shareit.item.dto.ItemInputDto;
 import ru.practicum.shareit.user.UserService;
@@ -20,9 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @Transactional
-@SpringBootTest(properties = "spring.datasource.url = jdbc:h2:mem:test")
+@SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class ItemServiceIntegrationTest {
+class ItemServiceIT {
 
     @Autowired
     private ItemService itemService;
@@ -51,6 +50,16 @@ class ItemServiceIntegrationTest {
         itemFullDto1.setComments(new ArrayList<>());
         itemFullDto2.setComments(new ArrayList<>());
     }
+
+    @Test
+    void create_findItem_added3Items() {
+        ItemInputDto itemInputDto =
+                new ItemInputDto(null, "asdfgh", "asdfghdfgh", true, null);
+        ItemFullDto itemFullDto = itemService.create(userFullDto1.getId(), itemInputDto);
+
+        assertThat(itemService.getById(userFullDto1.getId(), itemFullDto.getId())).isEqualTo(itemFullDto);
+    }
+
 
     @Test
     void search_return4Results_added2Items() {

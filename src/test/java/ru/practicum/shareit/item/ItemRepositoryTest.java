@@ -1,4 +1,5 @@
-package ru.practicum.shareit.repository;
+package ru.practicum.shareit.item;
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,16 +22,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @AutoConfigureTestDatabase
-class ItemRequestRepositoryTest {
+class ItemRepositoryTest {
 
+    @Autowired
+    private ItemRepository itemRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private ItemRequestRepository itemRequestRepository;
 
     private User userFromDb;
+    private Item itemFromDb;
     private ItemRequest itemRequestFromDb;
-
     private Pageable pageable;
 
     @BeforeEach
@@ -46,29 +49,44 @@ class ItemRequestRepositoryTest {
         itemRequest.setCreated(LocalDateTime.now().minusDays(1).truncatedTo(ChronoUnit.SECONDS));
         itemRequestFromDb = itemRequestRepository.save(itemRequest);
 
+        Item item = new Item();
+        item.setName("Кирпич");
+        item.setDescription("Шлакоблокунь");
+        item.setAvailable(true);
+        item.setOwner(userFromDb);
+        item.setItemRequest(itemRequestFromDb);
+        itemFromDb = itemRepository.save(item);
+
         pageable = PageRequest.of(1 / 20, 20, Sort.by("id").descending());
     }
 
     @Test
-    void findAllByRequesterId_return1ItemRequest_added1Request() {
-        assertEquals(List.of(itemRequestFromDb),
-                itemRequestRepository.findAllByRequesterId(userFromDb.getId()));
+    void findAllByOwnerId_return1Item_added1Items() {
+        assertEquals(List.of(itemFromDb), itemRepository.findAllByOwnerId(userFromDb.getId(), pageable));
     }
 
     @Test
-    void findAllByRequesterId_returnEmpty_added1Request() {
-        assertEquals(List.of(), itemRequestRepository.findAllByRequesterId(3L));
+    void findAllByOwnerId_returnEmpty_added1Items() {
+        assertEquals(List.of(), itemRepository.findAllByOwnerId(999L, pageable));
     }
 
     @Test
-    void findAllByRequesterIdNot_return1ItemRequest_added1Request() {
-        assertEquals(List.of(itemRequestFromDb),
-                itemRequestRepository.findAllByRequesterIdNot(9999L, pageable));
+    void search_return1Item_added1Items() {
+        assertEquals(List.of(itemFromDb), itemRepository.search("кир", pageable));
     }
 
     @Test
-    void findAllByRequesterIdNot_returnEmpty_added1Request() {
-        assertEquals(List.of(),
-                itemRequestRepository.findAllByRequesterIdNot(userFromDb.getId(), pageable));
+    void search_returnEmpty_added1Items() {
+        assertEquals(List.of(), itemRepository.search("выфавыф", pageable));
+    }
+
+    @Test
+    void getItemsByRequestId_return1Item_added1Items() {
+        assertEquals(List.of(itemFromDb), itemRepository.findAllByItemRequestId(itemRequestFromDb.getId()));
+    }
+
+    @Test
+    void getItemsByRequest_returnEmpty_added1Items() {
+        assertEquals(List.of(), itemRepository.findAllByItemRequestId(999L));
     }
 }

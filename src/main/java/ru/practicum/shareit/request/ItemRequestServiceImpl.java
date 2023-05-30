@@ -15,6 +15,7 @@ import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,7 +33,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> getByRequesterId(Long requesterId) {
         User requester = userService.getUserById(requesterId);
-        List<ItemRequestDto> result = itemRequestRepository.findAllByRequesterId(requester.getId())
+        List<ItemRequestDto> result = itemRequestRepository
+                .findAllByRequesterIdOrderByCreatedDesc(requester.getId())
                 .stream()
                 .map(ItemRequestMapper::mapToDto)
                 .collect(Collectors.toList());
@@ -50,7 +52,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDto> getAll(Long requesterId, Integer from, Integer size) {
         User requester = userService.getUserById(requesterId);
         Pageable pageable = getPage(from, size);
-        List<ItemRequestDto> result = itemRequestRepository.findAllByRequesterIdNot(requester.getId(), pageable)
+        List<ItemRequestDto> result = itemRequestRepository
+                .findAllByRequesterIdNotOrderByCreatedDesc(requester.getId(), pageable)
                 .stream()
                 .map(ItemRequestMapper::mapToDto)
                 .collect(Collectors.toList());
@@ -68,6 +71,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         User user = userService.getUserById(userId);
         ItemRequest itemRequest = new ItemRequest();
         itemRequest.setRequester(user);
+        itemRequest.setCreated(LocalDateTime.now());
         ItemRequestDto result = Optional.of(itemRequestRepository
                         .save(ItemRequestMapper.mapToItemRequest(itemRequestInputDto, itemRequest)))
                 .map(ItemRequestMapper::mapToDto)

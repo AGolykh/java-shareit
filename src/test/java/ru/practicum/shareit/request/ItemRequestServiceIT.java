@@ -1,4 +1,4 @@
-package ru.practicum.shareit.integration;
+package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +11,6 @@ import ru.practicum.shareit.item.dto.ItemFullDto;
 import ru.practicum.shareit.item.dto.ItemInputDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemShortDto;
-import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestInputDto;
 import ru.practicum.shareit.user.UserService;
@@ -23,9 +22,9 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Transactional
-@SpringBootTest(properties = "spring.datasource.url = jdbc:h2:mem:test")
+@SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class ItemRequestIntegrationTest {
+class ItemRequestServiceIT {
 
     @Autowired
     private ItemService itemService;
@@ -40,7 +39,7 @@ class ItemRequestIntegrationTest {
     private ItemRequestDto itemRequestDto2;
     ItemShortDto itemShortDto1;
     ItemShortDto itemShortDto2;
-
+    ItemInputDto itemInputDto1;
 
     @BeforeEach
     void beforeEach() {
@@ -52,7 +51,7 @@ class ItemRequestIntegrationTest {
         ItemRequestInputDto itemRequestInputDto2 = new ItemRequestInputDto("sadsadsadsasa");
         itemRequestDto1 = itemRequestService.create(userFullDto1.getId(), itemRequestInputDto1);
         itemRequestDto2 = itemRequestService.create(userFullDto2.getId(), itemRequestInputDto2);
-        ItemInputDto itemInputDto1 =
+        itemInputDto1 =
                 new ItemInputDto(null,
                         "asdfgh",
                         "asdfghdfgh",
@@ -75,6 +74,18 @@ class ItemRequestIntegrationTest {
         itemRequestDto2.setItems(itemRequestService.getById(itemRequestDto2.getRequester().getId(),
                 itemRequestDto2.getId()).getItems());
     }
+
+    @Test
+    void create_findItemRequest_added3ItemRequests() {
+        ItemRequestInputDto itemRequestInputDto = new ItemRequestInputDto("sadsadsa");
+        ItemRequestDto itemRequestDto = itemRequestService.create(userFullDto1.getId(), itemRequestInputDto);
+
+        itemRequestDto.setItems(itemRequestService.getById(itemRequestDto.getRequester().getId(),
+                itemRequestDto.getId()).getItems());
+
+        assertThat(itemRequestService.getById(userFullDto2.getId(), itemRequestDto.getId())).isEqualTo(itemRequestDto);
+    }
+
 
     @Test
     void getByRequesterId_return1ItemRequestEveryTime_added2ItemRequests() {

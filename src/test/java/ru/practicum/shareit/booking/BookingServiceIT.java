@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @Transactional
-@SpringBootTest(properties = "spring.datasource.url = jdbc:h2:mem:test")
+@SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class BookingServiceIntegrationTest {
+class BookingServiceIT {
 
     @Autowired
     private ItemService itemService;
@@ -34,11 +34,12 @@ class BookingServiceIntegrationTest {
 
     private UserFullDto userFullDto1;
     private UserFullDto userFullDto2;
-    BookingFullDto currentBookingFullDto;
-    BookingFullDto pastBookingFullDto;
-    BookingFullDto futureBookingFullDto;
-    BookingFullDto waitingBookingFullDto;
-    BookingFullDto rejectedBookingFullDto;
+    private BookingFullDto currentBookingFullDto;
+    private BookingFullDto pastBookingFullDto;
+    private BookingFullDto futureBookingFullDto;
+    private BookingFullDto waitingBookingFullDto;
+    private BookingFullDto rejectedBookingFullDto;
+    private ItemFullDto itemFullDto2;
 
     @BeforeEach
     void beforeEach() {
@@ -53,7 +54,7 @@ class BookingServiceIntegrationTest {
                 new ItemInputDto(null, "asdfghjk", "zxcvbnmjk", true, null);
 
         ItemFullDto itemFullDto1 = itemService.create(userFullDto1.getId(), itemInputDto1);
-        ItemFullDto itemFullDto2 = itemService.create(userFullDto2.getId(), itemInputDto2);
+        itemFullDto2 = itemService.create(userFullDto2.getId(), itemInputDto2);
         itemFullDto1.setComments(new ArrayList<>());
         itemFullDto2.setComments(new ArrayList<>());
 
@@ -79,6 +80,19 @@ class BookingServiceIntegrationTest {
         waitingBookingFullDto = bookingService.create(userFullDto2.getId(), waitingBookingInputDto);
         rejectedBookingFullDto = bookingService.create(userFullDto2.getId(), rejectedBookingInputDto);
     }
+
+    @Test
+    void create_findBooking_added6Bookings() {
+        LocalDateTime start = LocalDateTime.now().minusDays(1);
+        LocalDateTime end = LocalDateTime.now().plusDays(2);
+        BookingInputDto bookingInputDto = new BookingInputDto(start, end, itemFullDto2.getId());
+
+        BookingFullDto bookingFullDto = bookingService.create(userFullDto1.getId(), bookingInputDto);
+
+        assertThat(bookingService.getByBookerId(userFullDto1.getId(), "ALL", 0, 20)).asList()
+                .contains(bookingFullDto);
+    }
+
 
     @Test
     void getByBookerId_returnBookings_added5Booking() {

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.controller;
+package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -9,9 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserController;
-import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserInputDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 

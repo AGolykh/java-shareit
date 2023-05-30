@@ -1,4 +1,4 @@
-package ru.practicum.shareit.controller;
+package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -9,9 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.BookingController;
-import ru.practicum.shareit.booking.BookingService;
-import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingFullDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 import ru.practicum.shareit.item.dto.ItemShortDto;
@@ -54,8 +51,9 @@ public class BookingControllerTest {
                 new UserShortDto(3L, "wqewqew"),
                 Status.APPROVED);
 
-        BookingInputDto bookingInputDto2 = new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
-                LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
+        BookingInputDto bookingInputDto2 =
+                new BookingInputDto(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.SECONDS),
+                        LocalDateTime.now().plusDays(3).truncatedTo(ChronoUnit.SECONDS), 1L);
 
         bookingFullDto2 = new BookingFullDto(1L,
                 bookingInputDto2.getStart(),
