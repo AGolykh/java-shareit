@@ -2,7 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.comment.dto.CommentFullDto;
+import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.dto.CommentInputDto;
 import ru.practicum.shareit.item.dto.ItemFullDto;
 import ru.practicum.shareit.item.dto.ItemInputDto;
@@ -26,31 +26,35 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemFullDto update(@RequestHeader("X-Sharer-User-Id") Long userId,
-                          @RequestBody ItemInputDto itemInputDto,
-                          @PathVariable Long itemId) {
+                              @RequestBody ItemInputDto itemInputDto,
+                              @PathVariable Long itemId) {
         return itemService.update(userId, itemId, itemInputDto);
     }
 
     @GetMapping("/{itemId}")
     public ItemFullDto get(@RequestHeader("X-Sharer-User-Id") Long userId,
-                              @PathVariable Long itemId) {
+                           @PathVariable Long itemId) {
         return itemService.getById(userId, itemId);
     }
 
     @GetMapping
-    public List<ItemFullDto> getByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getByUserId(userId);
+    public List<ItemFullDto> getByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                         @RequestParam(defaultValue = "0") Integer from,
+                                         @RequestParam(defaultValue = "10") Integer size) {
+        return itemService.getByUserId(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemFullDto> search(@RequestParam String text) {
-        return itemService.search(text);
+    public List<ItemFullDto> search(@RequestParam String text,
+                                    @RequestParam(defaultValue = "0") Integer from,
+                                    @RequestParam(defaultValue = "10") Integer size) {
+        return itemService.search(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentFullDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                     @PathVariable Long itemId,
-                                     @Valid @RequestBody CommentInputDto commentInputDto) {
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @PathVariable Long itemId,
+                                 @Valid @RequestBody CommentInputDto commentInputDto) {
         return itemService.addComment(userId, itemId, commentInputDto);
     }
 }
