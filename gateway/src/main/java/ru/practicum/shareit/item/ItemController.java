@@ -1,60 +1,58 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.comment.dto.CommentDto;
-import ru.practicum.shareit.comment.dto.CommentInputDto;
-import ru.practicum.shareit.item.dto.ItemFullDto;
+import ru.practicum.shareit.item.dto.CommentInputDto;
 import ru.practicum.shareit.item.dto.ItemInputDto;
 
 import javax.validation.Valid;
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
 
-    private final ItemService itemService;
+    private final ItemClient itemClient;
 
     @PostMapping
-    public ItemFullDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                              @Valid @RequestBody ItemInputDto itemInputDto) {
-        return itemService.create(userId, itemInputDto);
+    public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                         @Valid @RequestBody ItemInputDto itemInputDto) {
+        return itemClient.create(userId, itemInputDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemFullDto update(@RequestHeader("X-Sharer-User-Id") Long userId,
-                              @RequestBody ItemInputDto itemInputDto,
-                              @PathVariable Long itemId) {
-        return itemService.update(userId, itemId, itemInputDto);
+    public ResponseEntity<Object> update(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                         @RequestBody ItemInputDto itemInputDto,
+                                         @PathVariable Long itemId) {
+        return itemClient.update(userId, itemId, itemInputDto);
     }
 
     @GetMapping("/{itemId}")
-    public ItemFullDto get(@RequestHeader("X-Sharer-User-Id") Long userId,
-                           @PathVariable Long itemId) {
-        return itemService.getById(userId, itemId);
+    public ResponseEntity<Object> get(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                      @PathVariable Long itemId) {
+        return itemClient.getById(userId, itemId);
     }
 
     @GetMapping
-    public List<ItemFullDto> getByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @RequestParam(defaultValue = "0") Integer from,
-                                         @RequestParam(defaultValue = "10") Integer size) {
-        return itemService.getByUserId(userId, from, size);
+    public ResponseEntity<Object> getByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                              @RequestParam(defaultValue = "0") Integer from,
+                                              @RequestParam(defaultValue = "10") Integer size) {
+        return itemClient.getByUserId(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemFullDto> search(@RequestParam String text,
-                                    @RequestParam(defaultValue = "0") Integer from,
-                                    @RequestParam(defaultValue = "10") Integer size) {
-        return itemService.search(text, from, size);
+    public ResponseEntity<Object> search(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                         @RequestParam String text,
+                                         @RequestParam(defaultValue = "0") Integer from,
+                                         @RequestParam(defaultValue = "10") Integer size) {
+        return itemClient.search(userId, text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                 @PathVariable Long itemId,
-                                 @Valid @RequestBody CommentInputDto commentInputDto) {
-        return itemService.addComment(userId, itemId, commentInputDto);
+    public ResponseEntity<Object> addComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                             @PathVariable Long itemId,
+                                             @Valid @RequestBody CommentInputDto commentInputDto) {
+        return itemClient.addComment(userId, itemId, commentInputDto);
     }
 }

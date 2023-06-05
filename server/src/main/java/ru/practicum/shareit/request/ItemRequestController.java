@@ -1,45 +1,46 @@
 package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestInputDto;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 public class ItemRequestController {
 
-    private final ItemRequestClient itemRequestClient;
+    private final ItemRequestService itemRequestService;
 
     @GetMapping
-    public ResponseEntity<Object> getByRequesterId(
+    public List<ItemRequestDto> getByRequesterId(
             @RequestHeader("X-Sharer-User-Id") Long requesterId) {
-        return itemRequestClient.getByRequesterId(requesterId);
+        return itemRequestService.getByRequesterId(requesterId);
     }
 
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getAll(
+    public List<ItemRequestDto> getAll(
             @RequestHeader("X-Sharer-User-Id") Long requesterId,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size) {
-        return itemRequestClient.getAll(requesterId, from, size);
+        return itemRequestService.getAll(requesterId, from, size);
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<Object> getById(
+    public ItemRequestDto getById(
             @RequestHeader("X-Sharer-User-Id") Long requesterId,
             @PathVariable Long requestId) {
-        return itemRequestClient.getById(requesterId, requestId);
+        return itemRequestService.getById(requesterId, requestId);
     }
 
 
     @PostMapping
-    public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemRequestDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
                                  @Valid @RequestBody ItemRequestInputDto itemRequestInputDto) {
-        return itemRequestClient.create(userId, itemRequestInputDto);
+        return itemRequestService.create(userId, itemRequestInputDto);
     }
 }
