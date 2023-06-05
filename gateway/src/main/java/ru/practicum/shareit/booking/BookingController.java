@@ -17,7 +17,6 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader("X-Sharer-User-Id") Long userId,
                                          @Valid @RequestBody BookingInputDto bookingInputDto) {
-        //log.info("Creating booking {}, userId={}", bookingInputDto, userId);
         return bookingClient.create(userId, bookingInputDto);
     }
 
@@ -31,7 +30,6 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> getById(@RequestHeader("X-Sharer-User-Id") Long userId,
                                   @PathVariable Long bookingId) {
-        //log.info("Get booking {}, userId={}", bookingId, userId);
         return bookingClient.getById(userId, bookingId);
     }
 
@@ -41,7 +39,6 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size) {
-        //log.info("Get booking with state {}, userId={}, from={}, size={}", state, bookerId, from, size);
         return bookingClient.getByBookerId(bookerId, state, from, size);
     }
 
@@ -51,7 +48,6 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size) {
-        //log.info("Get booking with state {}, userId={}, from={}, size={}", state, ownerId, from, size);
         return bookingClient.getByOwnerId(ownerId, state, from, size);
     }
 }
