@@ -28,6 +28,7 @@
 	</modules>
 
 	<build>
+		<defaultGoal>clean</defaultGoal>
 		<pluginManagement>
 			<plugins>
 				<plugin>
