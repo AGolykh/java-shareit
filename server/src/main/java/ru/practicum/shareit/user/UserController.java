@@ -1,17 +1,14 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserFullDto;
 import ru.practicum.shareit.user.dto.UserInputDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Validated
 @RequestMapping(path = "/users")
 public class UserController {
 
@@ -28,7 +25,7 @@ public class UserController {
     }
 
     @PostMapping
-    public UserFullDto create(@Valid @RequestBody UserInputDto userInputDto) {
+    public UserFullDto create(@RequestBody UserInputDto userInputDto) {
         return userService.create(userInputDto);
     }
 

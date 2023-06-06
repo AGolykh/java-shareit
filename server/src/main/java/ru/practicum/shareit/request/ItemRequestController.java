@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestInputDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -25,8 +24,8 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDto> getAll(
             @RequestHeader("X-Sharer-User-Id") Long requesterId,
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam Integer from,
+            @RequestParam Integer size) {
         return itemRequestService.getAll(requesterId, from, size);
     }
 
@@ -40,7 +39,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ItemRequestDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                 @Valid @RequestBody ItemRequestInputDto itemRequestInputDto) {
+                                 @RequestBody ItemRequestInputDto itemRequestInputDto) {
         return itemRequestService.create(userId, itemRequestInputDto);
     }
 }

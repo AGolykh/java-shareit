@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingFullDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,7 +16,7 @@ public class BookingController {
 
     @PostMapping
     public BookingFullDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                 @Valid @RequestBody BookingInputDto bookingInputDto) {
+                                 @RequestBody BookingInputDto bookingInputDto) {
         return bookingService.create(userId, bookingInputDto);
     }
 
@@ -37,18 +36,18 @@ public class BookingController {
     @GetMapping
     public List<BookingFullDto> getByBookerId(
             @RequestHeader("X-Sharer-User-Id") Long bookerId,
-            @RequestParam(defaultValue = "ALL") String state,
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam String state,
+            @RequestParam Integer from,
+            @RequestParam Integer size) {
         return bookingService.getByBookerId(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingFullDto> getByOwnerId(
             @RequestHeader("X-Sharer-User-Id") Long ownerId,
-            @RequestParam(defaultValue = "ALL") String state,
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam String state,
+            @RequestParam Integer from,
+            @RequestParam Integer size) {
         return bookingService.getByOwnerId(ownerId, state, from, size);
     }
 }

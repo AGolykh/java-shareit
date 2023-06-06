@@ -9,9 +9,9 @@ import ru.practicum.shareit.user.dto.UserInputDto;
 import javax.validation.Valid;
 
 @RestController
+@RequestMapping(path = "/users")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping(path = "/users")
 public class UserController {
 
     private final UserClient userClient;
